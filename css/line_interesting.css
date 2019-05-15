@@ -1,0 +1,80 @@
+/* line interesting start ---------------------------------------------------*/
+
+.descartes-cord-system-wrapper {
+	display: block;
+	float: left;
+	/*width: 50%;*/
+}
+
+#descartes-canvas-id {
+	z-index: 100;					
+}
+
+#lines-canvas-id {
+	z-index: 200;					
+}
+
+#mouse-canvas-id {
+	z-index: 300;					
+}
+
+.line-interesting-form-wrapper {
+	display: table;
+	margin: 10px 0 0 0;
+}
+
+.line-form {
+	width: 340px;
+	float: left;
+	margin: 0 20px 0 0;	
+}
+
+.red-line-form {
+	background-color: #f7ebeb;
+}
+
+.blue-line-form {	
+	background-color: #d8eeff;
+}
+
+.green-line-form {	
+	width: 700px;  
+	background-color: #a8e6aa;	
+}
+
+.line-name-div {
+	font-weight: bold;
+}
+
+.line-coords-div {
+	/*float: left;*/
+	font-weight: normal;	
+}
+
+.red-line {
+	color: #d24a4a;
+}
+
+.blue-line {
+	color: #6565de;
+}
+
+.green-line {
+	color: #3aa03d;
+}
+
+.point-form {
+	display: block;
+}
+
+.draw-button {
+	margin-top: 10px;
+	width: 100%;
+}
+
+.vector-check-label {
+	float: left;
+	/*padding-left: 20px;*/
+}
+
+/* line interesting end -----------------------------------------------------*/

@@ -1,0 +1,22 @@
+/* 2d_visibility.css css */
+
+.canvas-system-wrapper {	
+	margin: 0 auto;
+	margin-top: 5px;
+	margin-bottom: 5px;	
+}
+
+.map-canvas-class {
+	margin: 0 auto;
+	/*border: 1px solid blue;*/
+}
+
+.lines-canvas-class {
+	margin: 0 auto;
+	/*border: 1px solid red;*/
+}
+
+.mouse-canvas-class {
+	margin: 0 auto;
+	border: 1px solid black;
+}

@@ -1,0 +1,10 @@
+Game algorithm tutorials, assets
+===============================================================================
+
+https://www.redblobgames.com/
+
+2D Visibilities
+===============================================================================
+https://ncase.me/sight-and-light/
+https://legends2k.github.io/2d-fov/
+https://legends2k.github.io/2d-fov/design.html
