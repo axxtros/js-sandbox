@@ -179,13 +179,11 @@ function drawLight(canvasContext, x, y) {
 }
 
 function drawLightRays(canvasContext, light) {
-	//four corner
-	/*	
+	//four corner	
 	checkRayIntersect(light, 0, 0, shape1, false);
 	checkRayIntersect(light, linesCanvas.width, 0, shape1, true);
 	checkRayIntersect(light, linesCanvas.width, linesCanvas.height, shape1, true);
-	checkRayIntersect(light, 0, linesCanvas.height, shape1, false);	
-	*/
+	checkRayIntersect(light, 0, linesCanvas.height, shape1, false);
 
 	//all shape verticles
 	for(let i = 0; i != shape1.length; i++) {
@@ -204,8 +202,8 @@ function drawLightRays(canvasContext, light) {
 }
 
 function drawLineWithAngle(canvasContext, x1, y1, angle, length, color) {
-	x2 = x1 + Math.cos(Math.PI * angle / 180) * length;
-  y2 = y1 + Math.sin(Math.PI * angle / 180) * length;
+	x2 = x1 + (Math.cos(Math.PI * angle / 180) * length);
+	y2 = y1 + (Math.sin(Math.PI * angle / 180) * length);
 	drawLine(canvasContext, x1, y1, x2, y2, color);
 }
 
@@ -270,12 +268,14 @@ function checkRayIntersect(light, rayOriginX, rayOriginY, shape, isLeft) {
 		originalPoint.y = rayOriginY;
 		light.raysEndPoints.push(originalPoint);
 
+		/*
 		let angle = getAngleBetweenCoordsRadian(light.x, light.y, originalPoint.x, originalPoint.y);
 		let pAngle = angle + 0.00001;
 		let nAngle = angle - 0.00001;
 
 		let x2 = originalPoint.x + Math.cos(Math.PI * angle / 180) * 1;
-  	let y2 = originalPoint.y + Math.sin(Math.PI * angle / 180) * 1;  	
+  		let y2 = originalPoint.y + Math.sin(Math.PI * angle / 180) * 1;
+  		*/
 
 		/*
 		let angle = getAngleBetweenCoordsDegrees(light.x, light.y, originalPoint.x, originalPoint.y);		
