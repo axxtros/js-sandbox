@@ -10,3 +10,7 @@ https://legends2k.github.io/2d-fov/
 https://legends2k.github.io/2d-fov/design.html
 
 //https://www.youtube.com/watch?v=2yrgzlRhAes
+
+Isometric game demo
+===============================================================================
+https://www.youtube.com/watch?v=wtoL7rOk970
