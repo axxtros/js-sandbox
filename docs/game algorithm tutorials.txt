@@ -14,3 +14,7 @@ https://legends2k.github.io/2d-fov/design.html
 Isometric game demo
 ===============================================================================
 https://www.youtube.com/watch?v=wtoL7rOk970
+
+Linkek 2D-s játékokhoz
+===============================================================================
+http://www-cs-students.stanford.edu/~amitp/gameprog.html
