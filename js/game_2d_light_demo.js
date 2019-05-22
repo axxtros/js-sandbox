@@ -2,6 +2,7 @@
 //2D game light demo.
 //16/05/2019 axtros@gmail.com
 
+var MATRIX_SIZE = 40;					//ennyi pixel a canvas-en egy térkép matrix egység
 var SHAPE_COLOR = '#e5e8b8';
 
 var LIGHT_START_X = 400;
@@ -67,11 +68,11 @@ function initCanvases() {
 	mapContext.fillStyle = "#204060";
 	mapContext.fillRect(0, 0, mapCanvas.width, mapCanvas.height);
 	
-	//kockás háttér
-	for(let x = 0; x != mapCanvas.width; x += 40) {
+	//kockás háttér rajzolása
+	for(let x = 0; x != mapCanvas.width; x += MATRIX_SIZE) {
 		drawLine(mapContext, x, 0, x, mapCanvas.height, '#1f3852');
 	}
-	for(let y = 0; y != mapCanvas.height; y += 40) {
+	for(let y = 0; y != mapCanvas.height; y += MATRIX_SIZE) {
 		drawLine(mapContext, 0, y, mapCanvas.width, y, '#1f3852');
 	}
 
@@ -100,6 +101,7 @@ function initLight() {
 
 function initMap() {
 	addShape(generateMapRectangleShape(700, 50, 100, 20), true);	
+	
 	addShape(generateMapRectangleShape(700, 50, 100, 20), true);
 	addShape(generateMapRectangleShape(700, 100, 100, 20), true);
 	addShape(generateMapRectangleShape(700, 150, 100, 20), true);
@@ -116,20 +118,20 @@ function initMap() {
 	addShape(generateMapRectangleShape(700, 380, 20, 20), true);
 	addShape(generateMapRectangleShape(740, 380, 20, 20), true);	
 
-	addShape(generateMapRectangleShapeWithAngle(100, 150, 80, 60, 45), true);
+	addShape(generateMapRectangleShapeWithAngle(100, 150, 80, 60, 45), true);	
 	addShape(generateMapRectangleShapeWithAngle(150, 100, 40, 40, 30), true);
 	addShape(generateMapRectangleShapeWithAngle(170, 220, 40, 40, 45), true);
 	addShape(generateMapRectangleShapeWithAngle(200, 150, 60, 40, 10), true);	
 
-	addShape(generateTriangle(400, 150, 100), true);
+	//addShape(generateTriangle(400, 150, 100), true);
 
-	addShape(generateMapCircleShape(400, 80, 50, 1, 360, false), true);		//teljes kör (1 fokonként van 360 oldal, azaz 360 db háromszög)
+	addShape(generateMapCircleShape(400, 80, 50, 1, 360, false), true);		//teljes kör (1 fokonként van 360 oldal, azaz 360 db háromszög)	 
 }
 
 function addShape(shape, isAddToMap) {
 	if(isAddToMap) {
 		mapShapes.push(shape);
-		shapeVertexNum += shape.length;
+		shapeVertexNum += shape.vertexCoords.length;
 	}	
 	drawShape(mapContext, shape);	
 }
@@ -189,8 +191,7 @@ function refreshMouseCanvas() {
 	mouseContext.fillText("rays distance: " + light.distance, 5, 40);
 	mouseContext.fillText("rays number: " + 360 / LIGHT_RAY_RESOLUTION, 5, 55);
 	mouseContext.fillText("calculator count: " + calculatorCounter, 5, 70);
-	mouseContext.fillText("map all vertex num: " + shapeVertexNum, 5, 85);
-	shapeVertexCounter
+	mouseContext.fillText("map all vertex num: " + shapeVertexNum, 5, 85);	
 }
 
 function clearCanvas(canvasContext) {
@@ -198,15 +199,15 @@ function clearCanvas(canvasContext) {
 }
 
 function drawShape(canvasContext, shape) {
-	if(shape.length < 3)
-		return;
-	for(let i = 0; i != shape.length; i++) {
-		let coordFrom  = shape[i];
+	if(shape.vertexCoords.length < 3)
+		return;	
+	for(let i = 0; i != shape.vertexCoords.length; i++) {
+		let coordFrom  = shape.vertexCoords[i];
 		let coordTo;
-		if(i + 1 == shape.length)				//ha elér az utolsóig, akkor azt kösse össze az elsővel
-			coordTo  = shape[0];
+		if(i + 1 == shape.vertexCoords.length)				//ha elér az utolsóig, akkor azt kösse össze az elsővel
+			coordTo  = shape.vertexCoords[0];
 		else
-			coordTo  = shape[i + 1];
+			coordTo  = shape.vertexCoords[i + 1];
 		drawLine(canvasContext, coordFrom.x, coordFrom.y, coordTo.x, coordTo.y, SHAPE_COLOR);
 	}
 }
@@ -307,19 +308,19 @@ function calcCircualLightRays(light, shapes) {
 		for(var j = 0; j != shapes.length; j++) {
 			let shape = shapes[j];
 
-			for(let i = 0; i != shape.length; i++) {	//balról jobbra vannak az egyes pontok kiértékelve
-				let shapeLineFrom  = shape[i];
+			for(let i = 0; i != shape.vertexCoords.length; i++) {	//balról jobbra vannak az egyes pontok kiértékelve
+				let shapeLineFrom  = shape.vertexCoords[i];
 				let shapeLineTo;
-				if(i + 1 == shape.length) {	//ha elér az utolsóig, akkor azt kösse össze az elsővel
-					shapeLineTo  = shape[0];
+				if(i + 1 == shape.vertexCoords.length) {	//ha elér az utolsóig, akkor azt kösse össze az elsővel
+					shapeLineTo  = shape.vertexCoords[0];
 				}	else {				
-					shapeLineTo  = shape[i + 1];
+					shapeLineTo  = shape.vertexCoords[i + 1];
 				}				
 				let intersectPoint = calcLinesIntersect(light.x, light.y, rayEndCord.x, rayEndCord.y, shapeLineFrom.x, shapeLineFrom.y, shapeLineTo.x, shapeLineTo.y);
 				if(intersectPoint != null) {
 					intersectionPoints.push(intersectPoint);
 				}
-				calculatorCounter++;					
+				calculatorCounter++;		//a belső ciklus lefut: összes shape vertex * light sugarak számával (436 * 180 = 78480) !!!
 			}
 		}
 

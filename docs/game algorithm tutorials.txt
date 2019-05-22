@@ -15,6 +15,17 @@ Isometric game demo
 ===============================================================================
 https://www.youtube.com/watch?v=wtoL7rOk970
 
-Linkek 2D-s játékokhoz
+math
 ===============================================================================
-http://www-cs-students.stanford.edu/~amitp/gameprog.html
+Check if line intersects with circles perimeter
+https://math.stackexchange.com/questions/275529/check-if-line-intersects-with-circles-perimeter
+https://www.geeksforgeeks.org/check-line-touches-intersects-circle/
+http://paulbourke.net/geometry/circlesphere/
+
+javascript - game loop
+===============================================================================
+//https://isaacsukin.com/news/2015/01/detailed-explanation-javascript-game-loops-and-timing#physics-problems
+
+javascript- game tutorials
+===============================================================================
+https://codeincomplete.com/

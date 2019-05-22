@@ -25,8 +25,8 @@ function calcLinesIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
 				
 	if(ua > 0 && ua < 1 && ub > 0 && ub < 1) {	//ekkor metszi egymást a két szakasz
 		intersectPoint = Object.create(cord);
-		intersectPoint.x = m;
-		intersectPoint.y = n;		
+		intersectPoint.x = Math.round(m);
+		intersectPoint.y = Math.round(n);
 	}
 	return intersectPoint;	
 }
@@ -34,12 +34,21 @@ function calcLinesIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
 //Visszaadja egy megadott koordinátától, adott szögben, és távolságban lévő új koordinátát.
 function calcCoordsLineWithAngle(x, y, angle, distance) {
 	point = Object.create(cord);
-	point.x = x + Math.cos(Math.PI * angle / 180) * distance;
-  point.y = y + Math.sin(Math.PI * angle / 180) * distance;
+	point.x = Math.round(x + Math.cos(Math.PI * angle / 180) * distance);
+  point.y = Math.round(y + Math.sin(Math.PI * angle / 180) * distance);
   return point;
 }
 
-//Visszaadja két pont közötti szöget, fokban.
+//Visszaadja két pont közötti szöget, 360 fokos metrikában.
+function calcAngleBetweenCoordDegrees360(x1, y1, x2, y2) {
+	let angle = calcAngleBetweenCoordsDegrees(x1, y1, x2, y2);
+	if(angle < 0) 
+		return 180 + (360 - (180 - angle));	
+	return angle;
+}
+
+//Visszaadja két pont közötti szöget, fokban. Fontos, hogy az érték 0-180 fokig megegyezik a 360 fokos metrikával,
+//de 180 fok felett, egy -180 - 0 fok közötti értéket ad vissza.
 function calcAngleBetweenCoordsDegrees(x1, y1, x2, y2) {
 	return Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
 }
@@ -53,7 +62,7 @@ function calcAngleBetweenCoordsRadian(x1, y1, x2, y2) {
 function calcCoordsDistance(x1, y1, x2, y2) {
 	var xDist = x1 - x2;
 	var yDist = y1 - y2;
-	return Math.sqrt((xDist * xDist) + (yDist * yDist));
+	return Math.round(Math.sqrt((xDist * xDist) + (yDist * yDist)));
 }
 
 //True, ha a pointX, pointY koordináta rajta van a lineX1, lineY1, lineX2, lineY2 által meghatározott egyenesen.
@@ -102,4 +111,35 @@ function rotatePoint(pivotX, pivotY, angle, pointX, pointY) {
   point.x = xnew + pivotX;
   point.y = ynew + pivotY;
   return point;
+}
+
+function getMatrixCoord(vertexCoordX, vertexCoordY, matrixCellSize) {
+	matrixPoint = Object.create(cord);
+	matrixPoint.x = Math.floor(vertexCoordX / matrixCellSize);
+	matrixPoint.y = Math.floor(vertexCoordY / matrixCellSize);
+	return matrixPoint;
+}
+
+function getVertexCoord(matrixCoordX, matrixCoordY, matrixCellSize) {
+	vertexPoint = Object.create(cord);
+	vertexPoint.x = Math.floor(matrixCoordX * matrixCellSize) + (matrixCellSize / 2);
+	vertexPoint.y = Math.floor(matrixCoordY * matrixCellSize) + (matrixCellSize / 2);
+	return vertexPoint;
+}
+
+function calcVertexDistance(sizeM, matrixCellSize) {
+	return (sizeM / 2) * matrixCellSize;
+}
+
+function getShapeFarDistancePoint(shape) {
+	let shapeCoord = shape.vertexCoords[0];
+	let maxDistance = Math.round(calcCoordsDistance(shape.pivotVX, shape.pivotVY, shapeCoord.x, shapeCoord.y));
+	for(let i = 1; i != shape.vertexCoords.length; i++) {
+		shapeCoord = shape.vertexCoords[i];
+		let distance = Math.round(calcCoordsDistance(shape.pivotVX, shape.pivotVY, shapeCoord.x, shapeCoord.y));
+		if(distance > maxDistance) {
+			maxDistance = distance;
+		}
+	}
+	return maxDistance;
 }
