@@ -7,11 +7,11 @@ var SHAPE_COLOR = '#e5e8b8';
 
 var DEBUG_DRAW_MAP_SHAPES = true;
 var DEBUG_VISIBLE_LIGHT_CALC_SHAPE_DISTANCE = true;
-var DEBUG_VISIBLE_LIGHT_NO_CALC_RAY_BORDER = true;
-var DEBUG_HALF_CIRCLE_OPTIMATION = false;	//csak a fénysugarak azon felével számoljon, amelyek az adott shape felé mutatnak
+var DEBUG_VISIBLE_LIGHT_NO_CALC_RAY_BORDER = false;
+var DEBUG_HALF_CIRCLE_OPTIMATION = true;	//csak a fénysugarak azon felével számoljon, amelyek az adott shape felé mutatnak
 
-var LIGHT_START_X = 400 + (MAP_MATRIX_SIZE / 2); // :)
-var LIGHT_START_Y = 50;
+var LIGHT_START_X = 100;
+var LIGHT_START_Y = 250;
 var LIGHT_POINT_SIZE = 10;
 var LIGHT_COLOR = 'yellow';
 var LIGHT_RAY_DRAW_SIZE = 100;
@@ -34,22 +34,23 @@ var Cord = {
 }
 
 var Light = {
-	x: 0,																	//vertex X
-	y: 0,																	//vertex Y
-	mx: 0,																//matrix X
-	my: 0,																//matrix Y
-	glowRadius: LIGHT_POINT_SIZE,					//fényforrás nagysága
-	glowColor: LIGHT_COLOR,								//fényforrás szine
-	rayDensity: LIGHT_RAY_RESOLUTION,			//360 / rayDensity sugár indul ki a fényből (min: rayDensity = 1 => 360 rays, max: rayDensity = 360 => 1 rays)
+	x: 0,									//vertex X
+	y: 0,									//vertex Y
+	mx: 0,									//matrix X
+	my: 0,									//matrix Y
+	glowRadius: LIGHT_POINT_SIZE,			//fényforrás nagysága
+	glowColor: LIGHT_COLOR,					//fényforrás szine
+	rayDensity: LIGHT_RAY_RESOLUTION,		//360 / rayDensity sugár indul ki a fényből (min: rayDensity = 1 => 360 rays, max: rayDensity = 360 => 1 rays)
 	rayDrawDistance: LIGHT_RAY_DRAW_SIZE,	//kirajzolt fénysugarak nagysága
 	rayCalcDistance: LIGHT_RAY_CALC_SIZE,	//kalkulált fénysugarak nagysága
-	rayColor: LIGHT_RAY_COLOR,						//fénysugár szine
-	isInit: false,												//true, ha már fel van inicializálva a fény
-	isMove: false,												//true, ha a fény mozgásban van (ha nincs mozgásban, akkor nem számolódnak hozzá ray-ek)
-	lightShapes: new Array(),							//aktuálisan ezeket a shape-eket világítja meg a fény
-	raysEndPoints: new Array(),						//az egyes fénysugarak számított végpontjaik
-	debug_intersec_counter: 0,						//aktuálisan hányszor hívódik meg a intersect függvény
-	debug_vertex_counter: 0								//aktuálisan hány vertexel számol a fény
+	rayColor: LIGHT_RAY_COLOR,				//fénysugár szine
+	isInit: false,							//true, ha már fel van inicializálva a fény (fénysugár metszéspont optimalizáció miatt kell)
+	isMove: false,							//true, ha a fény mozgásban van (ha nincs mozgásban, akkor nem számolódnak hozzá ray-ek)
+	lightShapes: new Array(),				//aktuálisan ezeket a shape-eket világítja meg a fény
+	raysEndPoints: new Array(),				//az egyes fénysugarak számított végpontjaik
+	debug_intersec_counter: 0,				//aktuálisan hányszor hívódik meg a intersect függvény
+	debug_vertex_counter: 0,				//aktuálisan hány vertexel számol a fény
+	debug_calculated_ray_counter: 0			//számolt fénysugár, amely nem esik a half-circle optimalizáció alá
 }
 
 var mapMatrix = new Array();
@@ -124,7 +125,7 @@ function initMapMatrix(width, height) {
 }
 
 function initMap() {
-	/*
+	
 	let xx = 16;
 	let yy = 1;
 	for(let i = 0; i != 8; i++) {
@@ -135,9 +136,9 @@ function initMap() {
 		xx = 16;
 		yy += 3;		
 	}
-	*/
-	addShape(generateMatrixRectangleShape(20, 10, 1, 1, MAP_MATRIX_SIZE), true);	
-	addShape(generateMatrixRectangleShape(24, 10, 1, 1, MAP_MATRIX_SIZE), true);
+	
+	//addShape(generateMatrixRectangleShape(20, 10, 1, 1, MAP_MATRIX_SIZE), true);	
+	//addShape(generateMatrixRectangleShape(24, 10, 1, 1, MAP_MATRIX_SIZE), true);
 }
 
 function addShape(shape, isAddToMap) {
@@ -260,10 +261,11 @@ function refreshMouseCanvas(light) {
 	mouseContext.fillText("light x: " + light.x + ' y: ' +  light.y, 5, lineY += 15);
 	mouseContext.fillText("light mx: " + light.mx + ' my: ' +  light.my, 5, lineY += 15);
 	mouseContext.fillText("rays calc distance: " + light.rayCalcDistance, 5, lineY += 15);
-	mouseContext.fillText("light shape number: " + light.lightShapes.length, 5, lineY += 15);	
-	mouseContext.fillText("shapes vertex calc count: " + light.debug_vertex_counter, 5, lineY += 15);	
+	mouseContext.fillText("light shape number: " + light.lightShapes.length, 5, lineY += 15);		
 	mouseContext.fillText("ray density: " + 360 / light.rayDensity, 5, lineY += 15);
-	mouseContext.fillText("intersec calc. count: " + light.debug_intersec_counter, 5, lineY += 15);
+	mouseContext.fillText("shapes vertex calc count: " + light.debug_vertex_counter, 5, lineY += 15);	
+	mouseContext.fillText("calc. rays num: " + light.debug_calculated_ray_counter, 5, lineY += 15);
+	mouseContext.fillText("intersec calc. count: " + light.debug_intersec_counter, 5, lineY += 15);	
 }
 
 function clearCanvas(canvasContext) {
@@ -294,12 +296,14 @@ function drawLight(canvasContext, light) {
 	canvasContext.closePath();	
 }
 
+/*
 function drawLightRays(canvasContext, light) {	
 	for(let i = 0; i != light.raysEndPoints.length; i++) {		
 		let coordTo  = light.raysEndPoints[i];
 		drawLine(canvasContext, light.x, light.y, coordTo.x, coordTo.y, light.rayColor);			
 	}	
 }
+*/
 
 function drawLightRaysTriangle(canvasContext, light) {
 	for(let i = 0; i != light.raysEndPoints.length; i++) {
@@ -373,21 +377,18 @@ function calcCircualLightRays(light) {
 	}
 	light.raysEndPoints = [];								  
 	light.debug_intersec_counter = 0;
+	light.debug_calculated_ray_counter = 0;
 	let intersectionPoints = new Array();
 	addShapesToLight(light, mapShapes);
-	for(let angle = 0; angle != 360; angle += light.rayDensity) {		
-  	let rayEndCord = calcCoordsLineWithAngle(light.x, light.y, angle, light.rayDrawDistance);
-
+		
+	for(let angle = 0; angle != 360; angle += light.rayDensity) {	
+  		let rayEndCord = calcCoordsLineWithAngle(light.x, light.y, angle, light.rayDrawDistance);
+  		
 		for(var j = 0; j != light.lightShapes.length; j++) {
 			let shape = light.lightShapes[j];							
 
-			if(DEBUG_HALF_CIRCLE_OPTIMATION && checkIsRayCalc(light, shape, angle)) {
-				let point = Object.create(Cord);
-				point.x = rayEndCord.x;
-				point.y = rayEndCord.y;
-				light.raysEndPoints.push(point);
-
-			} else {
+			if(!(DEBUG_HALF_CIRCLE_OPTIMATION && checkIsRayCalc(light, shape, angle))) {
+				light.debug_calculated_ray_counter++;
 
 				for(let i = 0; i != shape.vertexCoords.length; i++) {	//balról jobbra vannak az egyes pontok kiértékelve
 					let shapeLineFrom  = shape.vertexCoords[i];
@@ -400,11 +401,11 @@ function calcCircualLightRays(light) {
 					let intersectPoint = calcLinesIntersect(light.x, light.y, rayEndCord.x, rayEndCord.y, shapeLineFrom.x, shapeLineFrom.y, shapeLineTo.x, shapeLineTo.y);
 					if(intersectPoint != null) {
 						intersectionPoints.push(intersectPoint);	  																																									
-					}
+					}					
 					light.debug_intersec_counter++;		//a belső ciklus lefut: összes shape vertex * light sugarak számával (436 * 180 = 78480) !!!
 				}
 
-			}			
+			} //half-circe optimization				
 
 		}	//for shape
 
@@ -454,6 +455,7 @@ function addShapesToLight(light, mapShapes) {
 	}
 }
 
+//megnézi, hogy az adott fénysugárra az elhelyezkedése miatt kell-e számolni a shape-felé metszéspontot
 function checkIsRayCalc(light, shape, rayAngle) {
 	let shapeAngle = Math.round(calcAngleBetweenCoordDegrees360(shape.pivotVX, shape.pivotVY, light.x, light.y));
 	
