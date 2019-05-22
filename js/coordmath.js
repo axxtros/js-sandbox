@@ -143,3 +143,24 @@ function getShapeFarDistancePoint(shape) {
 	}
 	return maxDistance;
 }
+
+function angle_between(n, a, b) {
+	n = (360 + (n % 360)) % 360;
+	a = (3600000 + a) % 360;
+	b = (3600000 + b) % 360;
+
+	if (a < b)
+		return a <= n && n <= b;
+	return a <= n || n <= b;
+}
+
+//True, ha az angle a két min..max szög között van.
+function checkAngleBetweenAngles(angle, minAngle, maxAngle) {
+	angle = (360 + (angle % 360)) % 360;
+	minAngle = (3600000 + minAngle) % 360;
+	maxAngle = (3600000 + maxAngle) % 360;
+
+	if (minAngle < maxAngle)
+		return minAngle <= angle && angle <= maxAngle;
+	return minAngle <= angle || angle <= maxAngle;
+}

@@ -8,6 +8,7 @@ var SHAPE_COLOR = '#e5e8b8';
 var DEBUG_DRAW_MAP_SHAPES = true;
 var DEBUG_VISIBLE_LIGHT_CALC_SHAPE_DISTANCE = true;
 var DEBUG_VISIBLE_LIGHT_NO_CALC_RAY_BORDER = true;
+var DEBUG_HALF_CIRCLE_OPTIMATION = false;	//csak a fénysugarak azon felével számoljon, amelyek az adott shape felé mutatnak
 
 var LIGHT_START_X = 400 + (MAP_MATRIX_SIZE / 2); // :)
 var LIGHT_START_Y = 50;
@@ -135,7 +136,8 @@ function initMap() {
 		yy += 3;		
 	}
 	*/
-	addShape(generateMatrixRectangleShape(20, 10, 1, 1, MAP_MATRIX_SIZE), true);
+	addShape(generateMatrixRectangleShape(20, 10, 1, 1, MAP_MATRIX_SIZE), true);	
+	addShape(generateMatrixRectangleShape(24, 10, 1, 1, MAP_MATRIX_SIZE), true);
 }
 
 function addShape(shape, isAddToMap) {
@@ -379,8 +381,7 @@ function calcCircualLightRays(light) {
 		for(var j = 0; j != light.lightShapes.length; j++) {
 			let shape = light.lightShapes[j];							
 
-			if(checkIsRayCalc(light, shape, angle)) {
-				
+			if(DEBUG_HALF_CIRCLE_OPTIMATION && checkIsRayCalc(light, shape, angle)) {
 				let point = Object.create(Cord);
 				point.x = rayEndCord.x;
 				point.y = rayEndCord.y;
@@ -474,8 +475,7 @@ function checkIsRayCalc(light, shape, rayAngle) {
 	if(DEBUG_VISIBLE_LIGHT_NO_CALC_RAY_BORDER) {
 		drawLineWithAngle(linesContext, light.x, light.y, minAngle, light.rayCalcDistance, 'red');
 		drawLineWithAngle(linesContext, light.x, light.y, maxAngle, light.rayCalcDistance, 'red');
-	}
-	let isCalc = !((rayAngle >= minAngle && rayAngle <= maxAngle) || (rayAngle <= minAngle && rayAngle >= maxAngle));
+	}	
 	//console.log('shapeAngle: ' + shapeAngle + ' minAngle:' + minAngle + ' maxAngle: ' + maxAngle + ' rayAngle: ' + rayAngle + ' isCalc: ' + isCalc);	
-	return isCalc;
+	return checkAngleBetweenAngles(rayAngle, minAngle, maxAngle);
 }
