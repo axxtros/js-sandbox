@@ -20,3 +20,8 @@
 	margin: 0 auto;
 	border: 1px solid black;
 }
+
+.maze-canvas-class {
+	margin-top: 5px;
+	margin-bottom: 5px;	
+}
