@@ -1,26 +1,29 @@
 //perfect maze generator
 //22/05/2019 axtros@gmail.com
 
-var DEBUG_ENABLED_MAP_GRID = false;
-
 var MAP_BACKGROUND_COLOR = '#cccccc';
-var MAP_GRID_COLOR = '#1f3852';
 
+var MAP_EMPTY_GRID = 0;
+var MAP_MAZE_GRID = 1;
 var MAZE_SIZE = 10;					//ennyi pixel a canvas-en egy térkép matrix egység
 var MAZE_COLOR = '#000000';
-var CURSOR_COLOR = '#ff0000';
-var MAP_EMPTY_GRID = 0;
+var MAZE_LAST_GRID_COLOR = '#ff0000';
 
 var mazeCanvas;
 var mazeContext;
 
 var mapMatrix = new Array();
 
+var Cord = {
+	row: 0,
+	column: 0
+}
+
 function init_maze_generator() {
 	 initCanvases();	
-	 initMapMatrix(mazeCanvas.width / MAZE_SIZE, mazeCanvas.height / MAZE_SIZE); //81x61
-	 //writeToConsoleMapMatrix(mazeCanvas.width / MAZE_SIZE, mazeCanvas.height / MAZE_SIZE);
-	 mazeGenerator(mapMatrix, 59, 1);	 
+	 initMapMatrix(mazeCanvas.height / MAZE_SIZE, mazeCanvas.width / MAZE_SIZE);	 
+	 mazeGenerator(mapMatrix, 1, 1);
+	 //deleteMapLonleyTiles(mapMatrix);	
 }
 
 function initCanvases() {
@@ -31,56 +34,142 @@ function initCanvases() {
 	let mazeCanvasPos = mazeCanvas.getBoundingClientRect();
 	mazeContext.fillStyle = MAP_BACKGROUND_COLOR;
 	mazeContext.fillRect(0, 0, mazeCanvas.width, mazeCanvas.height);
-
-	if(DEBUG_ENABLED_MAP_GRID) {
-		let mapWidth = 0;
-		let mapHeight = 0;
-		//kockás háttér rajzolása
-		for(let x = 0; x != mazeCanvas.width; x += MAZE_SIZE) {
-			drawLine(mazeContext, x, 0, x, mazeCanvas.height, MAP_GRID_COLOR);
-			mapWidth++;
-		}
-		for(let y = 0; y != mazeCanvas.height; y += MAZE_SIZE) {
-			drawLine(mazeContext, 0, y, mazeCanvas.width, y, MAP_GRID_COLOR);
-			mapHeight++;
-		}
-	}	
 }
 
-function initMapMatrix(width, height) {
-	for(let i = 0; i != height; i++) {
+function initMapMatrix(row, column) {
+	for(let i = 0; i != row; i++) {
 		mapMatrix[i] = new Array();
-		for(let j = 0; j != width; j++) {
-			mapMatrix[i][j] = 0;
+		for(let j = 0; j != column; j++) {
+			mapMatrix[i][j] = MAP_EMPTY_GRID;
 		}
 	}	
 }
 
 //maze generator --------------------------------------------------------------
-function mazeGenerator(mapMatrix, startMX, startMY) {
-	let currX = 1;	//startMX;
-	let currY = 80; //startMY;
-	let isDone = false;	
-	mapMatrix[currX][currY] = 1;	
-		
-	console.log('currX: ' + currX + ' currY: ' + currY + ' mapMatrix[currX + 2][currY]: ' + mapMatrix[currX][currY]);
+function mazeGenerator(mapMatrix, startRow, startColumn) {
+	let maxRow = mapMatrix.length;
+	let maxColumn = mapMatrix[0].length;
+	let cRow = startRow;
+	let cColumn = startColumn;	
+	let isDone = false;
+	var moves = [];
 
-	//drawRectangle(mazeContext, currX * MAZE_SIZE, currY * MAZE_SIZE, MAZE_SIZE, MAZE_COLOR);
+	mapMatrix[cRow][cColumn] = MAP_MAZE_GRID;
+
+	let mCord = Object.create(Cord);
+	mCord.row = cRow;
+	mCord.column = cColumn;
+	
+	moves.push(mCord);
+
+	while(!isDone) {		
+
+		let possibleDirections = "";		
+		if(cRow - 2 > 0 && cRow - 2 < maxRow && mapMatrix[cRow - 2][cColumn] == MAP_EMPTY_GRID) {
+			possibleDirections += 'N';
+		}		
+		if(cRow + 2 > 0 && cRow + 2 < maxRow && mapMatrix[cRow + 2][cColumn] == MAP_EMPTY_GRID) {
+			possibleDirections += 'S';
+		}		
+		if(cColumn - 2 > 0 && cColumn - 2 < maxColumn && mapMatrix[cRow][cColumn - 2] == MAP_EMPTY_GRID) {
+			possibleDirections += 'W';
+		}		
+		if(cColumn + 2 > 0 && cColumn + 2 < maxColumn && mapMatrix[cRow][cColumn + 2] == MAP_EMPTY_GRID) {
+			possibleDirections += 'E';
+		}
+
+		if(possibleDirections.length > 1) {
+			possibleDirections = possibleDirections[generateRandomNumber(0, possibleDirections.length - 1)];
+		}
+
+		if(possibleDirections != "") {
+			switch(possibleDirections) {
+				case 'N': 
+					mapMatrix[cRow - 1][cColumn] = MAP_MAZE_GRID;					
+					mapMatrix[cRow - 2][cColumn] = MAP_MAZE_GRID;
+					cRow -= 2;				
+				break;
+				case 'S': 
+					mapMatrix[cRow + 1][cColumn] = MAP_MAZE_GRID;
+					mapMatrix[cRow + 2][cColumn] = MAP_MAZE_GRID;
+					cRow += 2;				
+				break;
+				case 'W': 
+					mapMatrix[cRow][cColumn - 1] = MAP_MAZE_GRID;
+					mapMatrix[cRow][cColumn - 2] = MAP_MAZE_GRID;
+					cColumn -= 2;				
+				break;
+				case 'E': 
+					mapMatrix[cRow][cColumn + 1] = MAP_MAZE_GRID;
+					mapMatrix[cRow][cColumn + 2] = MAP_MAZE_GRID;
+					cColumn += 2;				
+				break;
+			}
+			
+			let mCord = Object.create(Cord);
+			mCord.row = cRow;
+			mCord.column = cColumn;	
+			moves.push(mCord);
+
+		}	else {
+			var back = moves.pop();
+			cRow = back.row;
+	   	cColumn = back.column;	   	
+		}
+
+		if(cRow == startRow && cColumn == startColumn) {
+			isDone = true;
+		}
+	}
+
 	drawMapMatrix(mazeCanvas, mazeContext, mapMatrix, MAZE_SIZE, MAZE_COLOR);
+	drawRectangle(mazeContext, cColumn * MAZE_SIZE, cRow * MAZE_SIZE, MAZE_SIZE, MAZE_LAST_GRID_COLOR);
+}
 
+//lonley maze tiles deleted ---------------------------------------------------
+function deleteMapLonleyTiles(mapMatrix) {
+	for(let row = 0; row != mapMatrix.length; row++) {		
+		for(let column = 0; column != mapMatrix[0].length; column++) {
+			if(isDeletedTile(mapMatrix, row, column)) {
+				deleteTiles(mapMatrix, row, column);
+				isDead = true;
+			}
+		}
+	}
+	drawMapMatrix(mazeCanvas, mazeContext, mapMatrix, MAZE_SIZE, MAZE_COLOR);		
+}
+
+function isDeletedTile(mapMatrix, row, column) {
+	let emptyCounter = 0;
+	if(row > 0 && mapMatrix[row - 1][column] == MAP_EMPTY_GRID) {
+		emptyCounter++;
+	}
+	if(row < mapMatrix.length - 1 && mapMatrix[row + 1][column] == MAP_EMPTY_GRID) {
+		emptyCounter++;
+	}
+	if(column > 0 && mapMatrix[row][column - 1] == MAP_EMPTY_GRID) {
+		emptyCounter++;
+	}
+	if(row < mapMatrix[0].length - 1 && mapMatrix[row][column + 1] == MAP_EMPTY_GRID) {
+		emptyCounter++;
+	}
+	return emptyCounter == 3;
+}
+
+function deleteTiles(mapMatrix, row, column) {
+	mapMatrix[row][column] = MAP_EMPTY_GRID
 }
 
 //draws -----------------------------------------------------------------------
-function drawMapMatrix(canvas, canvasContext, mapMatrix, mazeSize, color) {
-	let width = mapMatrix[0].length;
-	let height = mapMatrix.length;
+function drawMapMatrix(canvas, canvasContext, mapMatrix, mazeSize, color) {	
+	let row = mapMatrix.length;
+	let column = mapMatrix[0].length;
 	canvasContext.clearRect(0, 0, canvas.width, canvas.height);
 	canvasContext.fillStyle = MAP_BACKGROUND_COLOR;
 	canvasContext.fillRect(0, 0, canvas.width, canvas.height);
-	for(let y = 0; y != height; y++) {		
-		for(let x = 0; x != width; x++) {
-			console.log('x: ' + x + ' y:' + y);
-			if(mapMatrix[x][y] != 0) {
+	for(let y = 0; y != row; y++) {		
+		for(let x = 0; x != column; x++) {			
+			if(mapMatrix[y][x] == MAP_MAZE_GRID) {
 				drawRectangle(mazeContext, x * mazeSize, y * mazeSize, mazeSize, color);
 			}
 		}
