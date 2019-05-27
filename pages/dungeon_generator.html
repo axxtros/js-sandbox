@@ -2,30 +2,26 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Demos - 2D Game Light with matrix</title>    
+    <title>Demos - Dungeon generator</title>    
     <script src="../js/jquery-3.3.1.min.js"></script>
     <script src="../js/util.js"></script>
     <script src="../js/according.js"></script>    
-    <script src="../js/matrix_shapegenerator.js"></script>
-    <script src="../js/coordmath.js"></script>
-    <script src="../js/game_2d_light_with_matrix.js"></script>
-    <link rel="stylesheet" href="../css/main.css" />
+    <script src="../js/dungeon_generator.js"></script>
     <link rel="stylesheet" href="../css/visibility_2d.css" />
+    <link rel="stylesheet" href="../css/main.css" />
   </head>
-  <body onload="visibility2D_init();">
+  <body onload="init_maze_generator();">
   	
     <div class="header-wrapper">      
-      <div class="header-demo-title-wrapper">2D Game Light with matrix</div>
-      <div class="header-demo-create-date-wrapper">(2019.05.16.) Click mouse left button on the light source, and move the light with mouse.</div>
+      <div class="header-demo-title-wrapper">Dungeon generator</div>
+      <div class="header-demo-create-date-wrapper">(2019.05.27.)</div>
       <div class="header-demo-backlink-wrapper"><a href="../index.html">[ back ]</a></div>
     </div>
 
     <!-- ================================================================== -->
 
     <div class="canvas-system-wrapper">
-      <canvas id="map-canvas-id" class="map-canvas-class" width="800" height="800" style="z-index: 1;"></canvas>
-      <canvas id="lines-canvas-id" class="lines-canvas-class" width="800" height="800" style="z-index: 2;"></canvas>
-      <canvas id="mouse-canvas-id" class="mouse-canvas-class" width="800" height="800" style="z-index: 3;" onmousemove="mouseCoordCtrl(event);" onmousedown="catchLight();" onmouseup="dropLight();"></canvas>
+      <canvas id="maze-canvas-id" class="maze-canvas-class" width="210" height="210" style="z-index: 1;"></canvas>
     </div>
 
     <!-- ================================================================== -->  	

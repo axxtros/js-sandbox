@@ -15,6 +15,22 @@ function rgbToHex(r, g, b) {
 	return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
 
+function generateRandomEvenNumber(minValue, maxValue) {
+	let genNumber = generateRandomNumber(minValue, maxValue);
+	if(genNumber % 2 != 0) {
+		--genNumber;
+	}
+	return genNumber;
+}
+
+function generateRandomOddNumber(minValue, maxValue) {
+	let genNumber = generateRandomNumber(minValue, maxValue);
+	if(genNumber % 2 == 0) {
+		++genNumber;
+	}
+	return genNumber;
+}
+
 function generateRandomNumber(minValue, maxValue) {
 	return Math.floor(Math.random() * (maxValue - minValue + 1) + minValue);
 }

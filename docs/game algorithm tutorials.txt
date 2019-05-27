@@ -35,3 +35,7 @@ maze and dungeon generator algorithms
 https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/
 https://www.emanueleferonato.com/2015/06/30/pure-javascript-perfect-tile-maze-generation-with-a-bit-of-magic-thanks-to-phaser/
 https://www.youtube.com/watch?v=n-5wYShWQo8
+
+A* pathfinding
+===============================================================================
+https://www.youtube.com/watch?v=KNXfSOx4eEE

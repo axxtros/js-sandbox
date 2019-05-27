@@ -5,6 +5,7 @@ var MAP_BACKGROUND_COLOR = '#cccccc';
 
 var MAP_EMPTY_GRID = 0;
 var MAP_MAZE_GRID = 1;
+var MAP_ROOM_GRID = 2;
 var MAZE_SIZE = 10;					//ennyi pixel a canvas-en egy térkép matrix egység
 var MAZE_COLOR = '#000000';
 var MAZE_LAST_GRID_COLOR = '#ff0000';
@@ -21,9 +22,9 @@ var Cord = {
 
 function init_maze_generator() {
 	 initCanvases();	
-	 initMapMatrix(mazeCanvas.height / MAZE_SIZE, mazeCanvas.width / MAZE_SIZE);	 
+	 initMapMatrix(mazeCanvas.height / MAZE_SIZE, mazeCanvas.width / MAZE_SIZE);	 	
 	 mazeGenerator(mapMatrix, 1, 1);
-	 //deleteMapLonleyTiles(mapMatrix);	
+	 drawMapMatrix(mazeCanvas, mazeContext, mapMatrix, MAZE_SIZE, MAZE_COLOR);
 }
 
 function initCanvases() {
@@ -122,24 +123,12 @@ function mazeGenerator(mapMatrix, startRow, startColumn) {
 		}
 	}
 
-	drawMapMatrix(mazeCanvas, mazeContext, mapMatrix, MAZE_SIZE, MAZE_COLOR);
-	drawRectangle(mazeContext, cColumn * MAZE_SIZE, cRow * MAZE_SIZE, MAZE_SIZE, MAZE_LAST_GRID_COLOR);
-}
-
-//lonley maze tiles deleted ---------------------------------------------------
-function deleteMapLonleyTiles(mapMatrix) {
-	for(let row = 0; row != mapMatrix.length; row++) {		
-		for(let column = 0; column != mapMatrix[0].length; column++) {
-			if(isDeletedTile(mapMatrix, row, column)) {
-				deleteTiles(mapMatrix, row, column);
-				isDead = true;
-			}
-		}
-	}
-	drawMapMatrix(mazeCanvas, mazeContext, mapMatrix, MAZE_SIZE, MAZE_COLOR);		
 }
 
 function isDeletedTile(mapMatrix, row, column) {
+	if(mapMatrix[row][column] == MAP_EMPTY_GRID) {
+		return;
+	}
 	let emptyCounter = 0;
 	if(row > 0 && mapMatrix[row - 1][column] == MAP_EMPTY_GRID) {
 		emptyCounter++;
@@ -156,10 +145,6 @@ function isDeletedTile(mapMatrix, row, column) {
 	return emptyCounter == 3;
 }
 
-function deleteTiles(mapMatrix, row, column) {
-	mapMatrix[row][column] = MAP_EMPTY_GRID
-}
-
 //draws -----------------------------------------------------------------------
 function drawMapMatrix(canvas, canvasContext, mapMatrix, mazeSize, color) {	
 	let row = mapMatrix.length;
@@ -171,6 +156,8 @@ function drawMapMatrix(canvas, canvasContext, mapMatrix, mazeSize, color) {
 		for(let x = 0; x != column; x++) {			
 			if(mapMatrix[y][x] == MAP_MAZE_GRID) {
 				drawRectangle(mazeContext, x * mazeSize, y * mazeSize, mazeSize, color);
+			} else if(mapMatrix[y][x] == MAP_ROOM_GRID) {
+				drawRectangle(mazeContext, x * mazeSize, y * mazeSize, mazeSize, 'blue');
 			}
 		}
 	}
