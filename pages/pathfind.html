@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Demos - Pathfind</title>    
+    <script src="../js/jquery-3.3.1.min.js"></script>
+    <script src="../js/util.js"></script>
+    <script src="../js/according.js"></script>    
+    <script src="../js/pathfind.js"></script>
+    <link rel="stylesheet" href="../css/visibility_2d.css" />
+    <link rel="stylesheet" href="../css/main.css" />
+  </head>
+  <body onload="init_pathfind();">
+  	
+    <div class="header-wrapper">      
+      <div class="header-demo-title-wrapper">Pathfind</div>
+      <div class="header-demo-create-date-wrapper">(2019.05.31.)</div>
+      <div class="header-demo-backlink-wrapper"><a href="../index.html">[ back ]</a></div>
+    </div>
+
+    <!-- ================================================================== -->
+
+    <div class="canvas-system-wrapper">
+      <canvas id="map-canvas-id" class="maze-canvas-class" width="210" height="210" style="z-index: 1;"></canvas>
+    </div>
+
+    <!-- ================================================================== -->  	
+
+    <div class="body-ending-div"></div>      
+    <div class="footer-wrapper">
+      <div class="footer-text-wrapper">Developed by <b>axtros</b>, 2018-<span id="current_year">0000</span>. E-mail: <a href="mailto:axtros@gmail.com">axtros@gmail.com</a></div>
+    </div>
+
+    <script>
+      document.getElementById("current_year").innerHTML = new Date().getFullYear();      
+    </script>
+
+  </body>

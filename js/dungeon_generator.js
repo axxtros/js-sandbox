@@ -39,9 +39,8 @@ var mapRooms = new Array();
 function init_dungeon_generator() {
 	initCanvases();	
 	//initMapMatrix(mazeCanvas.height / MAZE_SIZE, mazeCanvas.width / MAZE_SIZE);	 	 
-
-	//generateDungeon(mazeCanvas.height / MAZE_SIZE, mazeCanvas.width / MAZE_SIZE, 3, 3, 9, 9, 100); 	 
-	generateDungeon(mazeCanvas.height / MAZE_SIZE, mazeCanvas.width / MAZE_SIZE, 3, 3, 21, 21, 100);	
+	
+	generateDungeon(mazeCanvas.height / MAZE_SIZE, mazeCanvas.width / MAZE_SIZE, 3, 21, 3, 21, 10);
 
 	drawMapMatrix(mazeCanvas, mazeContext, mapMatrix, MAZE_SIZE, false);
 }
@@ -56,23 +55,14 @@ function initCanvases() {
 	mazeContext.fillRect(0, 0, mazeCanvas.width, mazeCanvas.height);
 }
 
-function initMapMatrix(row, column) {
-	for(let i = 0; i != row; i++) {
-		mapMatrix[i] = new Array();
-		for(let j = 0; j != column; j++) {
-			mapMatrix[i][j] = MAP_EMPTY_GRID;
-		}
-	}	
-}
+function generateDungeon(mapRow, mapColumn, roomMinWidth, roomMaxWidth, roomMinHeight, roomMaxHeight, attemptsNum) {
 
-function generateDungeon(mapRow, mapColumn, roomMinWidth, roomMinHeight, roomMaxWidth, roomMaxHeight, attemptsNum) {
-
-	//1. térkép mátrix inicializálása
-	if(mapRow < 11) {
-		mapRow = 11;		
+	//1. térkép mátrix inicializálása (20x20-as a legkissebb)
+	if(mapRow < 21) {
+		mapRow = 21;		
 	}
-	if(mapColumn < 11) {
-		mapColumn = 11;
+	if(mapColumn < 21) {
+		mapColumn = 21;
 	}
 	initMapMatrix(mapRow, mapColumn);
 
@@ -109,6 +99,15 @@ function generateDungeon(mapRow, mapColumn, roomMinWidth, roomMinHeight, roomMax
 	 deletedFakeTargetGrid(mapMatrix, MAP_MAZE_GRID, MAP_EMPTY_GRID, 4);
 
 	 return mapMatrix;
+}
+
+function initMapMatrix(row, column) {
+	for(let i = 0; i != row; i++) {
+		mapMatrix[i] = new Array();
+		for(let j = 0; j != column; j++) {
+			mapMatrix[i][j] = MAP_EMPTY_GRID;
+		}
+	}	
 }
 
 //room generator --------------------------------------------------------------
@@ -468,7 +467,7 @@ function drawMapMatrix(canvas, canvasContext, mapMatrix, mazeSize, isOneColor) {
 			if(mazeColor != MAP_EMPTY_COLOR && isOneColor) {
 				mazeColor = '#bdb8ae';
 			}
-			drawRectangle(mazeContext, x * mazeSize, y * mazeSize, mazeSize, mazeColor);
+			drawRectangle(canvasContext, x * mazeSize, y * mazeSize, mazeSize, mazeColor);
 		}
 	}
 }
@@ -484,7 +483,7 @@ function drawLine(canvasContext, x1, y1, x2, y2, color) {
 	canvasContext.stroke();
 }
 
-function drawRectangle(canvasContext, x, y, size, color) {
+function drawRectangle(canvasContext, x, y, size, color) {	
 	canvasContext.fillStyle = color;
-	canvasContext.fillRect(x, y, size, size);
+	canvasContext.fillRect(x, y, size, size);	
 }
