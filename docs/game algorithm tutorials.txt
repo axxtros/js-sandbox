@@ -41,10 +41,6 @@ https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/
 https://www.emanueleferonato.com/2015/06/30/pure-javascript-perfect-tile-maze-generation-with-a-bit-of-magic-thanks-to-phaser/
 https://www.youtube.com/watch?v=n-5wYShWQo8
 
-A* pathfinding
-===============================================================================
-https://www.youtube.com/watch?v=KNXfSOx4eEE
-
 Isometric solutions
 ===============================================================================
 https://gamedevelopment.tutsplus.com/tutorials/creating-isometric-worlds-a-primer-for-game-developers--gamedev-6511
@@ -71,6 +67,11 @@ https://cubebrush.co/3dmotive/products/cr0msq/model-and-texture-a-stylized-dunge
 
 -> ezt csináld meg tesztnek:
 https://www.youtube.com/watch?v=ZuzpWPEW5g4
+
+A* pathfinding
+===============================================================================
+http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html
+https://www.youtube.com/watch?v=KNXfSOx4eEE
 
 keywords:
 ===============================================================================
