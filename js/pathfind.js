@@ -1,6 +1,8 @@
 //pathfind.js
 //A* pathfind algorithm
 
+var ENABLED_VERTICAL_MOVE = true;
+
 var MAZE_SIZE = 20;
 
 var SQUARE_COST = 10;		//normál lépées költsége
@@ -31,6 +33,9 @@ var Tile = {
 
 var openTileList = new Array();		
 var closeTileList = new Array();
+var isGoalTile = false;
+var isNotPossiblePath = false;
+var path = new Array();
 
 function init_pathfind() {
 	initCanvas();
@@ -46,24 +51,38 @@ function initCanvas() {
 function initMap() {	
 	initMapMatrix(8, 8);
 
-	startRow = 2;
-	startColumn = 1;
-	endRow = 4;
-	endColumn = 4;
+	// startRow = 2;
+	// startColumn = 1;
+	// endRow = 4;
+	// endColumn = 4;
 
-	mapMatrix[startRow][startColumn] = MAP_START_TILE;
+	startRow = 5;
+	startColumn = 0;
+	endRow = 7;
+	endColumn = 6;
 	
 	mapMatrix[0][3] = MAP_WALL_TILE;	
-	mapMatrix[2][3] = MAP_WALL_TILE;	
+	//mapMatrix[1][3] = MAP_WALL_TILE;		
+
+	mapMatrix[2][1] = MAP_WALL_TILE;
+	mapMatrix[2][2] = MAP_WALL_TILE;
+
+	mapMatrix[2][3] = MAP_WALL_TILE;
 	mapMatrix[3][3] = MAP_WALL_TILE;
 	mapMatrix[4][3] = MAP_WALL_TILE;
 	mapMatrix[5][3] = MAP_WALL_TILE;
 	mapMatrix[6][3] = MAP_WALL_TILE;
 	mapMatrix[7][3] = MAP_WALL_TILE;
-
-	mapMatrix[endRow][endColumn] = MAP_END_TILE;
-
+	
 	searchPathWithAStar(mapMatrix, startRow, startColumn, endRow, endColumn);
+
+	for(let i = 0; i != path.length; i++) {
+		let tile = path[i];
+		mapMatrix[tile.row][tile.column] = MAP_PATH_CLOSE_TILE;
+	}
+
+	mapMatrix[startRow][startColumn] = MAP_START_TILE;
+	mapMatrix[endRow][endColumn] = MAP_END_TILE;
 
 	drawMapMatrix(mapCanvas, mapContext, mapMatrix, MAZE_SIZE, false);
 }
@@ -89,6 +108,7 @@ function searchPathWithAStar(mapMatrix, fromRow, fromColumn, toRow, toColumn) {
 	startTile.row = fromRow;
 	startTile.column = fromColumn;
 	startTile.parent = null;
+	startTile.f = 0;
 	startTile.g = 0;
 	startTile.h = 0;
 	closeTileList.push(startTile);	
@@ -96,97 +116,166 @@ function searchPathWithAStar(mapMatrix, fromRow, fromColumn, toRow, toColumn) {
 	let goalTile = Object.create(Tile);
 	goalTile.row = toRow;
 	goalTile.column = toColumn;
-		
-	let sourceTile = startTile;
-	let isDone = false;
-	let index = 0;
-	while(!isDone) {				
-		sourceTile = searchTiles(sourceTile, goalTile);		
-		mapMatrix[sourceTile.row][sourceTile.column] = MAP_PATH_CLOSE_TILE;
+	goalTile.parent = null;
+	goalTile.f = 0;
+	goalTile.g = 0;
+	goalTile.h = 0;
 
-		++index;
-		if(index == 3) {
-			isDone = true;
+		
+	let sourceTile = startTile;	
+	isNotPossiblePath = false;
+	// let index = 0;
+	while(!isGoalTile) {								
+		if(sourceTile != null) {
+			sourceTile = searchTiles(sourceTile, goalTile);
+			
+			// mapMatrix[sourceTile.row][sourceTile.column] = MAP_PATH_CLOSE_TILE;
+			// drawMapMatrix(mapCanvas, mapContext, mapMatrix, MAZE_SIZE, false);
+
+		} else {
+			isGoalTile = true;
+			isNotPossiblePath = true;
 		}
 
+		// ++index;
+		// if(isGoalTile || index == 10) {
+		// 	isDone = true;
+		// }
+
 	}
+
+	if(!isNotPossiblePath && closeTileList.length > 0) {
+		let reversePath = new Array();
+		reversePath.push(goalTile);
+		let tile = closeTileList[closeTileList.length - 1];
+		while(tile.parent != null) {			
+			reversePath.push(tile);
+			tile = tile.parent;			
+		}
+		reversePath.push(startTile);
+
+		for(let i = reversePath.length - 1; i != 0; i--) {
+			path.push(reversePath[i]);
+		}
+		path.push(goalTile);
+	}
+	
+	if(isNotPossiblePath) {
+		console.log('No possible path!');
+	} 
+
 }
 
 function searchTiles(parentTile, goalTile) {
 	let tile = null;	
 	let possibleTileList = new Array();
 	//bal-felső
-	if(parentTile.row > 0 && parentTile.column > 0) {		
+	if(ENABLED_VERTICAL_MOVE && parentTile.row > 0 && parentTile.column > 0) {		
 		tile = createAndCalcTile(parentTile.row - 1, parentTile.column - 1, parentTile, goalTile, true);
-		addPossibleTiles(tile, possibleTileList);
+		addPossibleTile(tile, possibleTileList, goalTile);		
+		if(isGoalTile) return;
 	}
 	//felső
 	if(parentTile.row > 0) {		
 		tile = createAndCalcTile(parentTile.row - 1, parentTile.column, parentTile, goalTile, false);
-		addPossibleTiles(tile, possibleTileList);
+		addPossibleTile(tile, possibleTileList, goalTile);		
+		if(isGoalTile) return;
 	}
 	//jobb-felső
-	if(parentTile.row > 0 && parentTile.column + 1 <= mapMatrix[0].length) {
+	if(ENABLED_VERTICAL_MOVE && parentTile.row > 0 && parentTile.column + 1 <= mapMatrix[0].length) {
 		tile = createAndCalcTile(parentTile.row - 1, parentTile.column + 1, parentTile, goalTile, true);
-		addPossibleTiles(tile, possibleTileList);
+		addPossibleTile(tile, possibleTileList, goalTile);		
+		if(isGoalTile) return;
 	}
 	//jobb
 	if(parentTile.column + 1 <= mapMatrix[0].length) {
 		tile = createAndCalcTile(parentTile.row, parentTile.column + 1, parentTile, goalTile, false);
-		addPossibleTiles(tile, possibleTileList);
+		addPossibleTile(tile, possibleTileList, goalTile);		
+		if(isGoalTile) return;
 	}
 	//jobb-alsó
-	if(parentTile.row + 1 <= mapMatrix.length && parentTile.column + 1 <= mapMatrix[0].length) {
+	if(ENABLED_VERTICAL_MOVE && parentTile.row + 1 < mapMatrix.length && parentTile.column + 1 < mapMatrix[0].length) {
 		tile = createAndCalcTile(parentTile.row + 1, parentTile.column + 1, parentTile, goalTile, true);
-		addPossibleTiles(tile, possibleTileList);
+		addPossibleTile(tile, possibleTileList, goalTile);		
+		if(isGoalTile) return;
 	}		
 	//alsó
-	if(parentTile.row + 1 <= mapMatrix.length) {		
+	if(parentTile.row + 1 < mapMatrix.length) {		
 		tile = createAndCalcTile(parentTile.row + 1, parentTile.column, parentTile, goalTile, false);
-		addPossibleTiles(tile, possibleTileList);
+		addPossibleTile(tile, possibleTileList, goalTile);		
+		if(isGoalTile) return;
 	}
 	//bal-alsó
-	if(parentTile.row + 1 <= mapMatrix.length && parentTile.column > 0) {
+	if(ENABLED_VERTICAL_MOVE && parentTile.row + 1 < mapMatrix.length && parentTile.column > 0) {
 		tile = createAndCalcTile(parentTile.row + 1, parentTile.column - 1, parentTile, goalTile, true);
-		addPossibleTiles(tile, possibleTileList);
+		addPossibleTile(tile, possibleTileList, goalTile);		
+		if(isGoalTile) return;
 	}
 	//bal
 	if(parentTile.column > 0) {
 		tile = createAndCalcTile(parentTile.row, parentTile.column - 1, parentTile, goalTile, false);
-		addPossibleTiles(tile, possibleTileList);
-	}			
-
-	return selectedCloseTile(possibleTileList);
-}
-
-function addPossibleTiles(tile, possibleTileList) {
-	writeTileToConsole(tile);
-	if(isCalculatedTile(tile)) {
-		if(isTileEmpty(tile))	{
-			possibleTileList.push(tile);
-		} else if(isTileOpen(tile)) {
-			let openTile = getTileFromList(openTileList, tile);
-			if(openTile != null) {
-				if(openTile.f > tile.f) {
-					possibleTileList.push(tile);
-					swapTilesInList(tile, openTile, openTileList);
-				}
-			}			
-		}
-	}	
-}
-
-function selectedCloseTile(possibleTileList) {
-	if(possibleTileList == null || possibleTileList == 'undefined' || possibleTileList.length == 0) {
-		return null;
+		addPossibleTile(tile, possibleTileList, goalTile);		
+		if(isGoalTile) return;		
 	}
-	let minTile = getMinTileF(possibleTileList);
-	if(minTile != null) {
-		closeTileList.push(minTile);
-		if(isTileOpen(minTile)) {
-			removeTileFromList(openTileList, minTile);
-		}
+	return selectedCloseTile(parentTile, possibleTileList);
+}
+
+function addPossibleTile(tile, possibleTileList, goalTile) {
+	if(isTilesEqual(tile, goalTile)) {			
+		isGoalTile = true;
+		return;
+	}
+	let openTile = getTileFromList(openTileList, tile);
+	if(openTile != null) {			
+		tile.parent = openTile.parent;
+	}
+	if(isCalculatedTile(tile) && !isContainListTile(closeTileList, tile)) {
+		possibleTileList.push(tile);
 	}	
+}
+
+function selectedCloseTile(parentTile, possibleTileList) {
+	if(possibleTileList == null || possibleTileList == 'undefined' || possibleTileList.length == 0 && openTileList.length == 0) {	
+		return null;			
+	}
+	let minTile = null;
+	if(openTileList.length == 0) {
+		minTile = getMinTileF(possibleTileList);
+		removeTileFromList(possibleTileList, minTile);
+		openTileList = openTileList.concat(possibleTileList);
+		closeTileList.push(minTile);
+	} else {
+		
+		for(let i = 0; i != possibleTileList.length; i++) {
+			let possTile = possibleTileList[i];
+			let openTile = getTileFromList(openTileList, possTile);
+			if(openTile != null) {
+				if(possTile.f < openTile.f) {
+					possTile.parentTile = openTile.parentTile;
+					swapTilesInList(possTile, openTile, openTileList);	
+				}
+			}
+		}
+		
+		if(possibleTileList.length > 0) {
+			minTile = getMinTileF(possibleTileList);
+			removeTileFromList(possibleTileList, minTile);
+			removeTileFromList(openTileList, minTile);		
+			closeTileList.push(minTile);
+		}	else {
+			minTile = getMinTileF(openTileList);
+			removeTileFromList(openTileList, minTile);		
+			closeTileList.push(minTile);
+		}	
+
+		for(let i = 0; i != possibleTileList.length; i++) {
+			let possTile = possibleTileList[i];
+			if(!isContainListTile(openTileList, possTile)) {
+				openTileList.push(possTile);
+			}
+		}
+
+	}
 	return minTile;	
 }
 
@@ -196,7 +285,7 @@ function createAndCalcTile(row, column, parentTile, goalTile, isDiagonal) {
 	tile.row = row;
 	tile.column = column;
 	tile.parent = parentTile;
-	tile.g = isDiagonal == true ? diagonalDistanceCalc(tile, parentTile, SQUARE_COST, DIAGONAL_COST) : manhattanDistanceCalc(tile, parentTile, SQUARE_COST);
+	tile.g = isDiagonal == true ? diagonalDistanceCalc(tile, parentTile, parentTile.g + SQUARE_COST, parentTile.g + DIAGONAL_COST) : manhattanDistanceCalc(tile, parentTile, parentTile.g + SQUARE_COST);
 	tile.h = manhattanDistanceCalc(tile, goalTile, SQUARE_COST);
 	tile.f = (tile.g + tile.h);
 	return tile;
@@ -212,6 +301,19 @@ function diagonalDistanceCalc(currentTile, goalTile, costSquareMove, costDiagona
 	dx = Math.abs(currentTile.column - goalTile.column);
   dy = Math.abs(currentTile.row - goalTile.row);
   return costSquareMove * (dx + dy) + (costDiagonalMove - 2 * costSquareMove) * Math.min(dx, dy);
+}
+
+function getMinTileF(tileList) {
+	let minTile = null;
+	if(tileList != null && tileList != 'undefined' && tileList.length > 0) {
+		minTile = tileList[0];
+		for(let i = 1; i != tileList.length; i++) {
+			if(minTile.f > tileList[i].f) {
+				minTile = tileList[i];
+			}
+		}		
+	}
+	return minTile;
 }
 
 function swapTilesInList(newTile, oldTile, tileList) {
@@ -246,107 +348,4 @@ function getTileFromList(tileList, searchedTile) {
 	}
 	for(let i = 0; i != tileList.length; i++) {
 		if(isTilesEqual(tileList[i], searchedTile)) {
-			return tileList[i];
-		}
-	}
-	return null;
-}
-
-function isTilesEqual(tile1, tile2) {
-	return tile1.row == tile2.row && tile1.column == tile2.column;
-}
-
-function isCalculatedTile(tile) {
-	return isTileEmpty(tile) || isTileOpen(tile); 
-}
-
-function isStartTile(tile) {
-	return mapMatrix[tile.row][tile.column] == MAP_START_TILE;
-}
-
-function isGoalTile(tile) {
-	return mapMatrix[tile.row][tile.column] == MAP_END_TILE;
-}
-
-function isTileEmpty(tile) {
-	return mapMatrix[tile.row][tile.column] == MAP_PATH_EMPTY_TILE;
-}
-
-function isTileOpen(tile) {
-	return mapMatrix[tile.row][tile.column] == MAP_PATH_OPEN_TILE;
-}
-
-function isTileClose(tile) {
-	return mapMatrix[tile.row][tile.column] == MAP_PATH_CLOSE_TILE;
-}
-
-function getMinTileF(tileList) {
-	let minTile = null;
-	if(tileList != null && tileList != 'undefined' && tileList.length > 0) {
-		minTile = tileList[0];
-		for(let i = 1; i != tileList.length; i++) {
-			if(minTile.f > tileList[i].f) {
-				minTile = tileList[i];
-			}
-		}		
-	}
-	return minTile;
-}
-
-function writeTileToConsole(tile) {	
-	console.log('r/c: [' + tile.row + ',' + tile.column + ']');
-	console.log('parent: [' + tile.parent.row + ',' + tile.parent.column + ']');
-	console.log('g: ' + tile.g);
-	console.log('h: ' + tile.h);
-	console.log('f: ' + tile.f);
-	console.log('');
-}
-
-//draws -----------------------------------------------------------------------
-function drawMapMatrix(canvas, canvasContext, mapMatrix, mazeSize, isOneColor) {	
-	let row = mapMatrix.length;
-	let column = mapMatrix[0].length;
-	canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-	canvasContext.fillStyle = 'black';
-	canvasContext.fillRect(0, 0, canvas.width, canvas.height);
-	for(let y = 0; y != row; y++) {		
-		for(let x = 0; x != column; x++) {
-			let mazeColor = '';
-			if(mapMatrix[y][x] == MAP_START_TILE) {
-				mazeColor = 'red';
-			} else if(mapMatrix[y][x] == MAP_END_TILE
-			) {
-				mazeColor = 'green';
-			} else if(mapMatrix[y][x] == MAP_WALL_TILE) {
-				mazeColor = 'gray';
-			} else if(mapMatrix[y][x] == MAP_PATH_EMPTY_TILE) {
-				mazeColor = 'black';
-			} else if(mapMatrix[y][x] == MAP_PATH_OPEN_TILE) {
-				mazeColor = 'orange';
-			} else if(mapMatrix[y][x] == MAP_PATH_CLOSE_TILE) {
-				mazeColor = 'red';
-			} else if(mapMatrix[y][x] == MAP_MIN_GRID) {
-				mazeColor = 'yellow';
-			}	else {
-				mazeColor = 'blue';
-			}			
-			drawRectangle(canvasContext, x * mazeSize, y * mazeSize, mazeSize, mazeColor);
-		}
-	}
-}
-
-function drawLine(canvasContext, x1, y1, x2, y2, color) {
-	canvasContext.beginPath();
-	canvasContext.lineWidth = 1;
-	canvasContext.fillStyle = '#000000';
-	canvasContext.strokeStyle = color;
-	canvasContext.moveTo(x1, y1);
-	canvasContext.lineTo(x2, y2);	
-	canvasContext.closePath();
-	canvasContext.stroke();
-}
-
-function drawRectangle(canvasContext, x, y, size, color) {	
-	canvasContext.fillStyle = color;
-	canvasContext.fillRect(x, y, size, size);	
-}
+			return tileL
