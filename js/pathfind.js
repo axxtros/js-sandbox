@@ -56,23 +56,33 @@ function initMap() {
 	// endRow = 4;
 	// endColumn = 4;
 
-	startRow = 5;
+	startRow = 7;
 	startColumn = 0;
 	endRow = 7;
-	endColumn = 6;
+	endColumn = 5;
 	
-	mapMatrix[0][3] = MAP_WALL_TILE;	
-	//mapMatrix[1][3] = MAP_WALL_TILE;		
-
+	mapMatrix[0][4] = MAP_WALL_TILE;	
+	//mapMatrix[1][3] = MAP_WALL_TILE;
+	
 	mapMatrix[2][1] = MAP_WALL_TILE;
+	mapMatrix[1][2] = MAP_WALL_TILE;
 	mapMatrix[2][2] = MAP_WALL_TILE;
-
 	mapMatrix[2][3] = MAP_WALL_TILE;
-	mapMatrix[3][3] = MAP_WALL_TILE;
+
+	mapMatrix[2][4] = MAP_WALL_TILE;
+	mapMatrix[3][4] = MAP_WALL_TILE;
+
 	mapMatrix[4][3] = MAP_WALL_TILE;
-	mapMatrix[5][3] = MAP_WALL_TILE;
-	mapMatrix[6][3] = MAP_WALL_TILE;
-	mapMatrix[7][3] = MAP_WALL_TILE;
+	mapMatrix[4][2] = MAP_WALL_TILE;
+	mapMatrix[4][1] = MAP_WALL_TILE;
+	
+	mapMatrix[4][4] = MAP_WALL_TILE;
+	mapMatrix[4][5] = MAP_WALL_TILE;
+	mapMatrix[4][6] = MAP_WALL_TILE;
+
+	mapMatrix[5][4] = MAP_WALL_TILE;
+	mapMatrix[6][4] = MAP_WALL_TILE;
+	mapMatrix[7][4] = MAP_WALL_TILE;
 	
 	searchPathWithAStar(mapMatrix, startRow, startColumn, endRow, endColumn);
 
@@ -162,7 +172,7 @@ function searchPathWithAStar(mapMatrix, fromRow, fromColumn, toRow, toColumn) {
 	
 	if(isNotPossiblePath) {
 		console.log('No possible path!');
-	} 
+	}
 
 }
 
@@ -231,7 +241,7 @@ function addPossibleTile(tile, possibleTileList, goalTile) {
 	}
 	if(isCalculatedTile(tile) && !isContainListTile(closeTileList, tile)) {
 		possibleTileList.push(tile);
-	}	
+	}
 }
 
 function selectedCloseTile(parentTile, possibleTileList) {
@@ -285,8 +295,10 @@ function createAndCalcTile(row, column, parentTile, goalTile, isDiagonal) {
 	tile.row = row;
 	tile.column = column;
 	tile.parent = parentTile;
-	tile.g = isDiagonal == true ? diagonalDistanceCalc(tile, parentTile, parentTile.g + SQUARE_COST, parentTile.g + DIAGONAL_COST) : manhattanDistanceCalc(tile, parentTile, parentTile.g + SQUARE_COST);
-	tile.h = manhattanDistanceCalc(tile, goalTile, SQUARE_COST);
+	// tile.g = isDiagonal == true ? manhattanDiagonalDistanceCalc(tile, parentTile, parentTile.g + SQUARE_COST, parentTile.g + DIAGONAL_COST) : manhattanDistanceCalc(tile, parentTile, parentTile.g + SQUARE_COST);
+	// tile.h = manhattanDistanceCalc(tile, goalTile, SQUARE_COST);
+	tile.g = isDiagonal == true ? manhattanDiagonalDistanceCalc(tile, parentTile, parentTile.g + SQUARE_COST, parentTile.g + DIAGONAL_COST) : euclidianDistance(tile, parentTile, parentTile.g + SQUARE_COST);
+	tile.h = euclidianDistance(tile, goalTile, SQUARE_COST);
 	tile.f = (tile.g + tile.h);
 	return tile;
 }
@@ -297,10 +309,16 @@ function manhattanDistanceCalc(currentTile, goalTile, costSquareMove) {		//The s
   return costSquareMove * (dx + dy);
 }
 
-function diagonalDistanceCalc(currentTile, goalTile, costSquareMove, costDiagonalMove) {		//If your map allows diagonal movement you need a different heuristic. (http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html)
+function manhattanDiagonalDistanceCalc(currentTile, goalTile, costSquareMove, costDiagonalMove) {		//If your map allows diagonal movement you need a different heuristic. (http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html)
 	dx = Math.abs(currentTile.column - goalTile.column);
   dy = Math.abs(currentTile.row - goalTile.row);
   return costSquareMove * (dx + dy) + (costDiagonalMove - 2 * costSquareMove) * Math.min(dx, dy);
+}
+
+function euclidianDistance(currentTile, goalTile, costSquareMove) {
+	dx = Math.abs(currentTile.column - goalTile.column);
+	dy = Math.abs(currentTile.row - goalTile.row);
+	return costSquareMove * Math.sqrt(dx * dx + dy * dy);
 }
 
 function getMinTileF(tileList) {
@@ -348,4 +366,106 @@ function getTileFromList(tileList, searchedTile) {
 	}
 	for(let i = 0; i != tileList.length; i++) {
 		if(isTilesEqual(tileList[i], searchedTile)) {
-			return tileL
+			return tileList[i];
+		}
+	}
+	return null;
+}
+
+function isContainListTile(tileList, tile) {
+	if(tileList == null || tileList == 'undefined' || tileList.length == 0) {
+		return false;
+	}
+	for(let i = 0; i != tileList.length; i++) {
+		if(isTilesEqual(tileList[i], tile)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function isTilesEqual(tile1, tile2) {
+	return tile1.row == tile2.row && tile1.column == tile2.column;
+}
+
+function isCalculatedTile(tile) {
+	return isTileEmpty(tile); /*|| isTileOpen(tile); */
+}
+
+function isStartTile(tile) {
+	return mapMatrix[tile.row][tile.column] == MAP_START_TILE;
+}
+
+function isGoalTile(tile) {
+	return mapMatrix[tile.row][tile.column] == MAP_END_TILE;
+}
+
+function isTileEmpty(tile) {
+	return mapMatrix[tile.row][tile.column] == MAP_PATH_EMPTY_TILE;
+}
+
+function isTileOpen(tile) {
+	return mapMatrix[tile.row][tile.column] == MAP_PATH_OPEN_TILE;
+}
+
+// function isTileClose(tile) {
+// 	return mapMatrix[tile.row][tile.column] == MAP_PATH_CLOSE_TILE;
+// }
+
+function writeTileToConsole(tile) {	
+	console.log('r/c: [' + tile.row + ',' + tile.column + ']');
+	console.log('parent: [' + tile.parent.row + ',' + tile.parent.column + ']');
+	console.log('g: ' + tile.g);
+	console.log('h: ' + tile.h);
+	console.log('f: ' + tile.f);
+	console.log('');
+}
+
+//draws -----------------------------------------------------------------------
+function drawMapMatrix(canvas, canvasContext, mapMatrix, mazeSize, isOneColor) {	
+	let row = mapMatrix.length;
+	let column = mapMatrix[0].length;
+	canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+	canvasContext.fillStyle = 'black';
+	canvasContext.fillRect(0, 0, canvas.width, canvas.height);
+	for(let y = 0; y != row; y++) {		
+		for(let x = 0; x != column; x++) {
+			let mazeColor = '';
+			if(mapMatrix[y][x] == MAP_START_TILE) {
+				mazeColor = 'white';
+			} else if(mapMatrix[y][x] == MAP_END_TILE
+			) {
+				mazeColor = 'green';
+			} else if(mapMatrix[y][x] == MAP_WALL_TILE) {
+				mazeColor = 'gray';
+			} else if(mapMatrix[y][x] == MAP_PATH_EMPTY_TILE) {
+				mazeColor = 'black';
+			} else if(mapMatrix[y][x] == MAP_PATH_OPEN_TILE) {
+				mazeColor = 'orange';
+			} else if(mapMatrix[y][x] == MAP_PATH_CLOSE_TILE) {
+				mazeColor = 'red';
+			} else if(mapMatrix[y][x] == MAP_MIN_GRID) {
+				mazeColor = 'yellow';
+			}	else {
+				mazeColor = 'blue';
+			}			
+			drawRectangle(canvasContext, x * mazeSize, y * mazeSize, mazeSize, mazeColor);
+		}
+	}
+}
+
+function drawLine(canvasContext, x1, y1, x2, y2, color) {
+	canvasContext.beginPath();
+	canvasContext.lineWidth = 1;
+	canvasContext.fillStyle = '#000000';
+	canvasContext.strokeStyle = color;
+	canvasContext.moveTo(x1, y1);
+	canvasContext.lineTo(x2, y2);	
+	canvasContext.closePath();
+	canvasContext.stroke();
+}
+
+function drawRectangle(canvasContext, x, y, size, color) {	
+	canvasContext.fillStyle = color;
+	canvasContext.fillRect(x, y, size, size);	
+}
