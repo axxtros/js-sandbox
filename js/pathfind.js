@@ -1,31 +1,35 @@
 //pathfind.js
 //A* pathfind algorithm
 
-var ENABLED_VERTICAL_MOVE = true;
+var ENABLED_VERTICAL_MOVE = false;
 
 var MAZE_SIZE = 20;
 
 var SQUARE_COST = 10;		//normál lépées költsége
 var DIAGONAL_COST = 14;	//átlós lépés költsége
 
-var MAP_START_TILE = 1;
-var MAP_END_TILE = 2;
-var MAP_WALL_TILE = 3;
-var MAP_PATH_EMPTY_TILE = 4;
-var MAP_PATH_OPEN_TILE = 5;
-var MAP_PATH_CLOSE_TILE = 6;
+var MAP_MAZE_GRID = 1;
+var MAP_ROOM_GRID = 2;
+var MAP_DOOR_GRID = 3;
+
+var MAP_START_TILE = 100;
+var MAP_END_TILE = 200;
+var MAP_WALL_TILE = 300;
+var MAP_PATH_EMPTY_TILE = 400;
+var MAP_PATH_OPEN_TILE = 500;
+var MAP_PATH_CLOSE_TILE = 600;
 
 var mapCanvas;
 var mapContext;
 
 var mapMatrix = new Array();
 
-var Tile = {
+var Tile = {												//pathfind szempontjából ezekkel az attribútumokkal kell rendelkeznie egy-egy tile-nak
 	row: 0,
-	column: 0,
-	type: 0,
+	column: 0,	
 	parent: Tile,
-	cost: 0,
+	type: 0,													//itt nincs használva, de a game-ben kell majd
+	cost: 0,													//itt nincs használva, de a game-ben kell majd (itt kell a teljes költséget összevonni a tile esetén pl.: hely, víz, mocsár, stb.)
 	g: 0,
 	h: 0,
 	f: (this.g + this.h)
@@ -35,7 +39,7 @@ var openTileList = new Array();
 var closeTileList = new Array();
 var isGoalTile = false;
 var isNotPossiblePath = false;
-var path = new Array();
+var path = new Array();							//ebbe kerül a végeleges path
 
 function init_pathfind() {
 	initCanvas();
@@ -130,28 +134,17 @@ function searchPathWithAStar(mapMatrix, fromRow, fromColumn, toRow, toColumn) {
 	goalTile.f = 0;
 	goalTile.g = 0;
 	goalTile.h = 0;
-
 		
 	let sourceTile = startTile;	
 	isNotPossiblePath = false;
-	// let index = 0;
+	
 	while(!isGoalTile) {								
 		if(sourceTile != null) {
-			sourceTile = searchTiles(sourceTile, goalTile);
-			
-			// mapMatrix[sourceTile.row][sourceTile.column] = MAP_PATH_CLOSE_TILE;
-			// drawMapMatrix(mapCanvas, mapContext, mapMatrix, MAZE_SIZE, false);
-
+			sourceTile = searchTiles(sourceTile, goalTile);	
 		} else {
 			isGoalTile = true;
 			isNotPossiblePath = true;
 		}
-
-		// ++index;
-		// if(isGoalTile || index == 10) {
-		// 	isDone = true;
-		// }
-
 	}
 
 	if(!isNotPossiblePath && closeTileList.length > 0) {
@@ -163,7 +156,6 @@ function searchPathWithAStar(mapMatrix, fromRow, fromColumn, toRow, toColumn) {
 			tile = tile.parent;			
 		}
 		reversePath.push(startTile);
-
 		for(let i = reversePath.length - 1; i != 0; i--) {
 			path.push(reversePath[i]);
 		}
@@ -401,7 +393,11 @@ function isGoalTile(tile) {
 }
 
 function isTileEmpty(tile) {
-	return mapMatrix[tile.row][tile.column] == MAP_PATH_EMPTY_TILE;
+	//return mapMatrix[tile.row][tile.column] == MAP_PATH_EMPTY_TILE;
+	return mapMatrix[tile.row][tile.column] == MAP_PATH_EMPTY_TILE ||
+					mapMatrix[tile.row][tile.column] == MAP_MAZE_GRID ||
+					mapMatrix[tile.row][tile.column] == MAP_ROOM_GRID ||
+					mapMatrix[tile.row][tile.column] == MAP_DOOR_GRID;
 }
 
 function isTileOpen(tile) {
@@ -433,8 +429,7 @@ function drawMapMatrix(canvas, canvasContext, mapMatrix, mazeSize, isOneColor) {
 			let mazeColor = '';
 			if(mapMatrix[y][x] == MAP_START_TILE) {
 				mazeColor = 'white';
-			} else if(mapMatrix[y][x] == MAP_END_TILE
-			) {
+			} else if(mapMatrix[y][x] == MAP_END_TILE) {
 				mazeColor = 'green';
 			} else if(mapMatrix[y][x] == MAP_WALL_TILE) {
 				mazeColor = 'gray';

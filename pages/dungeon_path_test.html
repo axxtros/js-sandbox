@@ -2,28 +2,28 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Demos - Isometric map</title>    
+    <title>Demos - Dungeon generator</title>    
     <script src="../js/jquery-3.3.1.min.js"></script>
     <script src="../js/util.js"></script>
     <script src="../js/according.js"></script>    
     <script src="../js/dungeon_generator.js"></script>
-    <script src="../js/isometric_map.js"></script>
+    <script src="../js/pathfind.js"></script>
+    <script src="../js/dungeon_path_test.js"></script>
     <link rel="stylesheet" href="../css/visibility_2d.css" />
     <link rel="stylesheet" href="../css/main.css" />
   </head>
-  <body onload="init_isometric_map();">
+  <body onload="init();">
   	
     <div class="header-wrapper">      
-      <div class="header-demo-title-wrapper">Isometric map</div>
-      <div class="header-demo-create-date-wrapper">(2019.05.28.)</div>
+      <div class="header-demo-title-wrapper">Dunegon pathfind test</div>
+      <div class="header-demo-create-date-wrapper">(2019.06.27.)</div>
       <div class="header-demo-backlink-wrapper"><a href="../index.html">[ back ]</a></div>
     </div>
 
     <!-- ================================================================== -->
 
-    <div class="canvas-system-wrapper"> <!-- 1260, 630 -->
-      <canvas id="map-canvas-id" class="maze-canvas-class" width="1920" height="930" style="z-index: 100;"></canvas>
-      <canvas id="mouse-canvas-id" class="maze-canvas-class" width="1920" height="930" style="z-index: 200;" onmousemove="mouseCursorPos(event);"></canvas>
+    <div class="canvas-system-wrapper">
+      <canvas id="dungeon-canvas-id" class="dungeon-canvas-class" width="805" height="805" style="z-index: 1;"></canvas>
     </div>
 
     <!-- ================================================================== -->  	

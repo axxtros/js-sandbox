@@ -6,8 +6,8 @@ var DEBUG_DRAW_MAP_TILE_COORDS = true;
 var MAP_TOPLEFT_X = 0;				//a canvas-en hol van a térkép bal felső sarka, ahonnan a kirajzolás kezdődik (relatív bal-felső sarok, canvas-en belül)
 var MAP_TOPLEFT_Y = 0;
 
-var MAP_ROW_WIDTH = 21;				//a térkép mátrix row/column nagysága
-var MAP_ROW_HEIGHT = 21;
+var MAP_ROW_WIDTH = 31;				//a térkép mátrix row/column nagysága
+var MAP_ROW_HEIGHT = 31;
 
 var ISOMETRIC_TILE_WIDTH = 60;		//egy adott térképcsempe hosszúsága / magassága
 var ISOMETRIC_TILE_HEIGHT = (ISOMETRIC_TILE_WIDTH / 2);

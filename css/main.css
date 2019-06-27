@@ -102,6 +102,7 @@ body {
 }
 
 .demo-link-wrapper a:hover {
+	cursor: pointer;
 	color: #4168f7;
 }
 
