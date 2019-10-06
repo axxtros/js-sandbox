@@ -164,3 +164,47 @@ function checkAngleBetweenAngles(angle, minAngle, maxAngle) {
 		return minAngle <= angle && angle <= maxAngle;
 	return minAngle <= angle || angle <= maxAngle;
 }
+
+//Hexagons math ---------------------------------------------------------------
+
+/**
+ * Szögre állított hexagrid koordináták számítása. 
+ */
+function calcPointyHexCoord(centerCoordX, centerCoordY, size, cornerNum) {
+	var angle_deg = 60 * cornerNum - 30;			//30 fokos elfordítása a hex-nak, amúgy azonos a falt típusúval
+	var angle_rad = Math.PI / 180 * angle_deg;
+	point = Object.create(cord);
+  point.x = centerCoordX + size * Math.cos(angle_rad);
+  point.y = centerCoordY + size * Math.sin(angle_rad);
+  return point;
+}
+
+function getPointyHexaWidth(size) {
+	return Math.sqrt(3) * size;
+}
+
+function getPointyHexaHeight(size) {
+	return size + (size / 2);
+}
+
+/**
+ * Élre állított hexagrid koordináták számítása.
+ */
+function calcFlatHexCoord(centerCoordX, centerCoordY, size, cornerNum) {
+	var angle_deg = 60 * cornerNum;
+	var angle_rad = Math.PI / 180 * angle_deg;
+	point = Object.create(cord);
+  point.x = centerCoordX + size * Math.cos(angle_rad);
+  point.y = centerCoordY + size * Math.sin(angle_rad);
+  return point;
+}
+
+function getFlatHexaWidth(size) {
+	return 3 * (size / 2);
+}
+
+function getFlatHexaHeight(size) {
+	return Math.sqrt(3) * size;
+}
+
+//Hexagons math end -----------------------------------------------------------
