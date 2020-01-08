@@ -90,20 +90,76 @@ body {
 	margin: 10px;
 }
 
-..demo-link-wrapper {
+.link-wrapper a {
+	font-weight: normal;
+	text-decoration: none;
+}
+
+.demo-link-wrapper {
 	display: block;
 }
 
 .demo-link-wrapper a {
-	font-size: 14px;
-	font-weight: normal;
-	text-decoration: none;
+	font-size: 14px;	
 	color: #0025ab;
 }
 
 .demo-link-wrapper a:hover {
-	cursor: pointer;
 	color: #4168f7;
+}
+
+.tutorial-link-wrapper {
+	display: contents;		
+}
+
+.tutorial-link-wrapper a {
+	margin-right: 20px;
+	font-size: 12px;	
+	color: #029007;
+}
+
+.tutorial-link-wrapper a:hover {
+	color: #0cdc14;
+}
+
+.common-link-wrapper {
+	display: contents;		
+}
+
+.common-link-wrapper a {
+	margin-right: 20px;
+	font-size: 12px;	
+	color: #bb2806;
+}
+
+.common-link-wrapper a:hover {
+	color: #ff3a0c;
+}
+
+.link-separator {
+	display: block;
+	height: 20px;
+}
+
+.section-wrapper {
+	display: block;
+	height: 20px;
+	margin: 10px 0 10px 0;
+	border-top: 1px solid #d6d7d8;
+	border-bottom: 1px solid #d6d7d8;
+	background-color: #f3f3f3;
+	font-size: 11px;
+}
+
+.section-wrapper:hover {
+	background-color: #dedede;
+	cursor: pointer;
+}
+
+.section-title-wrapper {
+	font-size: 12px;
+	font-weight: bold;
+	padding: 2px 0 0 4px;
 }
 
 /* footer -------------------------------------------------------------------*/
@@ -119,6 +175,6 @@ body {
 
 .footer-text-wrapper {
 	margin: 0 auto;
-	padding: 6px 0 0 0;
+	padding: 8px 0 0 0;
 	width: 300px;
 }

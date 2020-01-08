@@ -1,80 +1,46 @@
-/* line interesting start ---------------------------------------------------*/
+//hexagons tanulmányok 2
+//08/10/2019 axtros@gmail.com
 
-.descartes-cord-system-wrapper {
-	display: block;
-	float: left;
-	/*width: 50%;*/
+//https://www.redblobgames.com/grids/hexagons/
+
+var MAP_BACKGROUND_COLOR = '#cccccc';
+var HEX_COLOR= '#000';
+
+var hexagonCanvas;
+var hexagonContext;
+
+var hexaSize = 40;
+var firstCoordX = 40;
+var firstCoordY = 40;
+
+var mousePos = {
+  x: 0,
+  y: 0
 }
 
-#descartes-canvas-id {
-	z-index: 100;					
+function initHexagons() {
+  initCanvases();
+  
+  drawHexaMapGrid(1, 1);
 }
 
-#lines-canvas-id {
-	z-index: 200;					
+function initCanvases() {
+	hexagonCanvas = document.getElementById("hexagon-canvas-id");
+	hexagonContext = hexagonCanvas.getContext("2d");
+	hexagonContext.scale(1, 1);
+	hexagonContext.fillStyle = MAP_BACKGROUND_COLOR;
+	hexagonContext.fillRect(0, 0, hexagonCanvas.width, hexagonCanvas.height);
 }
 
-#mouse-canvas-id {
-	z-index: 300;					
-}
+//“odd-q” vertical layout shoves odd columns down
+function drawHexaMapGrid(rowNum, columnNum) {
+  var coordX = firstCoordX;
+  var coordY = firstCoordY;
+  var columnCounter = 0;
 
-.line-interesting-form-wrapper {
-	display: table;
-	margin: 10px 0 0 0;
-}
-
-.line-form {
-	width: 340px;
-	float: left;
-	margin: 0 20px 0 0;	
-}
-
-.red-line-form {
-	background-color: #f7ebeb;
-}
-
-.blue-line-form {	
-	background-color: #d8eeff;
-}
-
-.green-line-form {	
-	width: 700px;  
-	background-color: #a8e6aa;	
-}
-
-.line-name-div {
-	font-weight: bold;
-}
-
-.line-coords-div {
-	/*float: left;*/
-	font-weight: normal;	
-}
-
-.red-line {
-	color: #d24a4a;
-}
-
-.blue-line {
-	color: #6565de;
-}
-
-.green-line {
-	color: #3aa03d;
-}
-
-.point-form {
-	display: block;
-}
-
-.draw-button {
-	margin-top: 10px;
-	width: 100%;
-}
-
-.vector-check-label {
-	float: left;
-	/*padding-left: 20px;*/
-}
-
-/* line interesting end -----------------------------------------------------*/
+  for(column = 0; column != columnNum; column++) {
+    for(row = 0; row != rowNum; row++) {
+      drawHexagon(false, coordX, coordY, hexaSize, HEX_COLOR);
+      coordY += getFlatHexaHeight(hexaSize);
+    }
+  

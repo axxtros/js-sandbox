@@ -2,28 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Demos - Dungeon generator</title>    
+    <title>Demos - Hexagons</title>
     <script src="../js/jquery-3.3.1.min.js"></script>
-    <script src="../js/util.js"></script>
-    <script src="../js/according.js"></script>    
-    <script src="../js/dungeon_generator.js"></script>
-    <script src="../js/pathfind.js"></script>
-    <script src="../js/dungeon_path_test.js"></script>
-    <link rel="stylesheet" href="../css/visibility_2d.css" />
+    <script src="../js/coordmath.js"></script>
+    <script src="../js/util.js"></script>    
+    <script src="../js/hexagons_2.js"></script>
     <link rel="stylesheet" href="../css/main.css" />
   </head>
-  <body onload="init();">
+  <body onload="initHexagons();">
   	
     <div class="header-wrapper">      
-      <div class="header-demo-title-wrapper">Dunegon pathfind test</div>
-      <div class="header-demo-create-date-wrapper">(2019.06.27.)</div>
+      <div class="header-demo-title-wrapper">Hexagon tanulmányok 2</div>
+      <div class="header-demo-create-date-wrapper">(2019.10.04.)</div>
       <div class="header-demo-backlink-wrapper"><a href="../index.html">[ back ]</a></div>
     </div>
 
     <!-- ================================================================== -->
 
     <div class="canvas-system-wrapper">
-      <canvas id="dungeon-canvas-id" class="dungeon-canvas-class" width="805" height="805" style="z-index: 1;"></canvas>
+      <canvas id="hexagon-canvas-id" class="hexagon-canvas-class" width="400" height="400" style="z-index: 1;" onmousemove="getMousePos(event);"></canvas>
     </div>
 
     <!-- ================================================================== -->  	

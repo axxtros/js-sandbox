@@ -2,6 +2,8 @@
 //coordinate geometry mathematical functions
 //17/05/2019 axtros@gmail.com
 
+//http://csharphelper.com/blog/2015/10/draw-a-hexagonal-grid-in-c/
+
 var cord = {
 	x: 0,
 	y: 0
@@ -205,6 +207,59 @@ function getFlatHexaWidth(size) {
 
 function getFlatHexaHeight(size) {
 	return Math.sqrt(3) * size;
+}
+
+function pixelToFlatHex(x, y, size) {    
+    var q = Math.round(( 2./3 * x) / size);
+    var r = Math.round((-1./3 * x  +  Math.sqrt(3)/3 * y) / size);		
+		console.log('HEX Q: ' + q);
+  	console.log('HEX R: ' + r);
+}
+
+//https://stackoverflow.com/questions/40776014/javascript-point-collision-with-regular-hexagon
+var retPos = {
+	x: 0,
+	y: 0
+};
+
+function getSelectedHexagon(x, y, size) {
+	var r = size; 
+	var w = r * 2;
+	var h = Math.sqrt(3) * r;
+
+	var xa, ya, xpos, xx, yy, r2, h2;
+	r2 = r / 2;
+	h2 = h / 2;
+	xx = Math.floor(x / r2);
+	yy = Math.floor(y / h2);
+	xpos = Math.floor(xx / 3);
+	xx %= 6;
+	if (xx % 3 === 0) {      // column with diagonals
+		xa = (x % r2) / r2;  // to find the diagonals
+		ya = (y % h2) / h2;
+		if (yy % 2===0) {
+			ya = 1 - ya;
+		}
+		if (xx === 3) {
+			xa = 1 - xa;
+		}
+		if (xa > ya) {
+			retPos.x = xpos + (xx === 3 ? -1 : 0);
+			retPos.y = Math.floor(yy / 2);
+			return retPos;
+		}
+		retPos.x = xpos + (xx === 0 ? -1 : 0);
+		retPos.y = Math.floor((yy + 1) / 2);
+		return retPos;
+	}
+	if (xx < 3) {
+		retPos.x = xpos + (xx === 3 ? -1 : 0);
+		retPos.y = Math.floor(yy / 2);
+		return retPos;
+	}
+	retPos.x = xpos + (xx === 0 ? -1 : 0);
+	retPos.y = Math.floor((yy + 1) / 2);
+	return retPos;
 }
 
 //Hexagons math end -----------------------------------------------------------

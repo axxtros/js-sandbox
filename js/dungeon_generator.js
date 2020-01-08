@@ -38,11 +38,11 @@ var mapRooms = new Array();
 
 function init_dungeon_generator() {
 	initCanvases();	
-	//initDungeonMapMatrix(mazeCanvas.height / MAZE_SIZE, mazeCanvas.width / MAZE_SIZE);	 	 
+	//initMapMatrix(mazeCanvas.height / MAZE_SIZE, mazeCanvas.width / MAZE_SIZE);	 	 
 	
-	generateDungeon(mazeCanvas.height / MAZE_SIZE, mazeCanvas.width / MAZE_SIZE, 3, 9, 3, 9, 100);
+	generateDungeon(mazeCanvas.height / MAZE_SIZE, mazeCanvas.width / MAZE_SIZE, 3, 21, 3, 21, 10);
 
-	drawDungeonMatrix(mazeCanvas, mazeContext, mapMatrix, MAZE_SIZE, false);
+	drawMapMatrix(mazeCanvas, mazeContext, mapMatrix, MAZE_SIZE, false);
 }
 
 function initCanvases() {
@@ -64,7 +64,7 @@ function generateDungeon(mapRow, mapColumn, roomMinWidth, roomMaxWidth, roomMinH
 	if(mapColumn < 21) {
 		mapColumn = 21;
 	}
-	initDungeonMapMatrix(mapRow, mapColumn);
+	initMapMatrix(mapRow, mapColumn);
 
 	//2. room generator
 	if(attemptsNum == 0) {	//egy szobának minimum kell lennie, különben az eredmény nem dungeon lesz, hanem perfect maze
@@ -100,7 +100,8 @@ function generateDungeon(mapRow, mapColumn, roomMinWidth, roomMaxWidth, roomMinH
 
 	 return mapMatrix;
 }
-function initDungeonMapMatrix(row, column) {
+
+function initMapMatrix(row, column) {
 	for(let i = 0; i != row; i++) {
 		mapMatrix[i] = new Array();
 		for(let j = 0; j != column; j++) {
@@ -441,7 +442,7 @@ function isDeletedTile(mapMatrix, row, column, sourceGridType, targetGridType, s
 }
 
 //draws -----------------------------------------------------------------------
-function drawDungeonMatrix(canvas, canvasContext, mapMatrix, mazeSize, isOneColor) {	
+function drawMapMatrix(canvas, canvasContext, mapMatrix, mazeSize, isOneColor) {	
 	let row = mapMatrix.length;
 	let column = mapMatrix[0].length;
 	canvasContext.clearRect(0, 0, canvas.width, canvas.height);

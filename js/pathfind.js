@@ -1,35 +1,31 @@
 //pathfind.js
 //A* pathfind algorithm
 
-var ENABLED_VERTICAL_MOVE = false;
+var ENABLED_VERTICAL_MOVE = true;
 
 var MAZE_SIZE = 20;
 
 var SQUARE_COST = 10;		//normál lépées költsége
 var DIAGONAL_COST = 14;	//átlós lépés költsége
 
-var MAP_MAZE_GRID = 1;
-var MAP_ROOM_GRID = 2;
-var MAP_DOOR_GRID = 3;
-
-var MAP_START_TILE = 100;
-var MAP_END_TILE = 200;
-var MAP_WALL_TILE = 300;
-var MAP_PATH_EMPTY_TILE = 400;
-var MAP_PATH_OPEN_TILE = 500;
-var MAP_PATH_CLOSE_TILE = 600;
+var MAP_START_TILE = 1;
+var MAP_END_TILE = 2;
+var MAP_WALL_TILE = 3;
+var MAP_PATH_EMPTY_TILE = 4;
+var MAP_PATH_OPEN_TILE = 5;
+var MAP_PATH_CLOSE_TILE = 6;
 
 var mapCanvas;
 var mapContext;
 
 var mapMatrix = new Array();
 
-var Tile = {												//pathfind szempontjából ezekkel az attribútumokkal kell rendelkeznie egy-egy tile-nak
+var Tile = {
 	row: 0,
-	column: 0,	
+	column: 0,
+	type: 0,
 	parent: Tile,
-	type: 0,													//itt nincs használva, de a game-ben kell majd
-	cost: 0,													//itt nincs használva, de a game-ben kell majd (itt kell a teljes költséget összevonni a tile esetén pl.: hely, víz, mocsár, stb.)
+	cost: 0,
 	g: 0,
 	h: 0,
 	f: (this.g + this.h)
@@ -39,7 +35,7 @@ var openTileList = new Array();
 var closeTileList = new Array();
 var isGoalTile = false;
 var isNotPossiblePath = false;
-var path = new Array();							//ebbe kerül a végeleges path
+var path = new Array();
 
 function init_pathfind() {
 	initCanvas();
@@ -134,17 +130,28 @@ function searchPathWithAStar(mapMatrix, fromRow, fromColumn, toRow, toColumn) {
 	goalTile.f = 0;
 	goalTile.g = 0;
 	goalTile.h = 0;
+
 		
 	let sourceTile = startTile;	
 	isNotPossiblePath = false;
-	
+	// let index = 0;
 	while(!isGoalTile) {								
 		if(sourceTile != null) {
-			sourceTile = searchTiles(sourceTile, goalTile);	
+			sourceTile = searchTiles(sourceTile, goalTile);
+			
+			// mapMatrix[sourceTile.row][sourceTile.column] = MAP_PATH_CLOSE_TILE;
+			// drawMapMatrix(mapCanvas, mapContext, mapMatrix, MAZE_SIZE, false);
+
 		} else {
 			isGoalTile = true;
 			isNotPossiblePath = true;
 		}
+
+		// ++index;
+		// if(isGoalTile || index == 10) {
+		// 	isDone = true;
+		// }
+
 	}
 
 	if(!isNotPossiblePath && closeTileList.length > 0) {
@@ -156,6 +163,7 @@ function searchPathWithAStar(mapMatrix, fromRow, fromColumn, toRow, toColumn) {
 			tile = tile.parent;			
 		}
 		reversePath.push(startTile);
+
 		for(let i = reversePath.length - 1; i != 0; i--) {
 			path.push(reversePath[i]);
 		}
@@ -393,74 +401,16 @@ function isGoalTile(tile) {
 }
 
 function isTileEmpty(tile) {
-	//return mapMatrix[tile.row][tile.column] == MAP_PATH_EMPTY_TILE;
-	return mapMatrix[tile.row][tile.column] == MAP_PATH_EMPTY_TILE ||
-					mapMatrix[tile.row][tile.column] == MAP_MAZE_GRID ||
-					mapMatrix[tile.row][tile.column] == MAP_ROOM_GRID ||
-					mapMatrix[tile.row][tile.column] == MAP_DOOR_GRID;
+	return mapMatrix[tile.row][tile.column] == MAP_PATH_EMPTY_TILE;
 }
 
 function isTileOpen(tile) {
 	return mapMatrix[tile.row][tile.column] == MAP_PATH_OPEN_TILE;
 }
 
+/*
 // function isTileClose(tile) {
-// 	return mapMatrix[tile.row][tile.column] == MAP_PATH_CLOSE_TILE;
-// }
-
-function writeTileToConsole(tile) {	
-	console.log('r/c: [' + tile.row + ',' + tile.column + ']');
-	console.log('parent: [' + tile.parent.row + ',' + tile.parent.column + ']');
-	console.log('g: ' + tile.g);
-	console.log('h: ' + tile.h);
-	console.log('f: ' + tile.f);
-	console.log('');
-}
-
-//draws -----------------------------------------------------------------------
-function drawMapMatrix(canvas, canvasContext, mapMatrix, mazeSize, isOneColor) {	
-	let row = mapMatrix.length;
-	let column = mapMatrix[0].length;
-	canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-	canvasContext.fillStyle = 'black';
-	canvasContext.fillRect(0, 0, canvas.width, canvas.height);
-	for(let y = 0; y != row; y++) {		
-		for(let x = 0; x != column; x++) {
-			let mazeColor = '';
-			if(mapMatrix[y][x] == MAP_START_TILE) {
-				mazeColor = 'white';
-			} else if(mapMatrix[y][x] == MAP_END_TILE) {
-				mazeColor = 'green';
-			} else if(mapMatrix[y][x] == MAP_WALL_TILE) {
-				mazeColor = 'gray';
-			} else if(mapMatrix[y][x] == MAP_PATH_EMPTY_TILE) {
-				mazeColor = 'black';
-			} else if(mapMatrix[y][x] == MAP_PATH_OPEN_TILE) {
-				mazeColor = 'orange';
-			} else if(mapMatrix[y][x] == MAP_PATH_CLOSE_TILE) {
-				mazeColor = 'red';
-			} else if(mapMatrix[y][x] == MAP_MIN_GRID) {
-				mazeColor = 'yellow';
-			}	else {
-				mazeColor = 'blue';
-			}			
-			drawRectangle(canvasContext, x * mazeSize, y * mazeSize, mazeSize, mazeColor);
-		}
-	}
-}
-
-function drawLine(canvasContext, x1, y1, x2, y2, color) {
-	canvasContext.beginPath();
-	canvasContext.lineWidth = 1;
-	canvasContext.fillStyle = '#000000';
-	canvasContext.strokeStyle = color;
-	canvasContext.moveTo(x1, y1);
-	canvasContext.lineTo(x2, y2);	
-	canvasContext.closePath();
-	canvasContext.stroke();
-}
-
-function drawRectangle(canvasContext, x, y, size, color) {	
-	canvasContext.fillStyle = color;
-	canvasContext.fillRect(x, y, size, size);	
-}
+// 	return mapMatrix[tile.row][tile.column] == MAP_PATH_CINDX( 	 �E             (   x  �       ~                     �B     � �     �B     xZ�X/��%�T^/��
+X`/��%�T^/�                       .M a r v e l s . A g e n t . C a r t e r . S 0 1 . B D R I P . x 2 6 4 . H u n - K r i s s z ��B     � �     �B     BHF�X/�j�w�^/�j�w�^/�j�w�^/�                       .M a r v e l s . A g e n t . C a r t e r . S 0 2 . B D R I P . x 2 6 4 . H u n - K r i s s z   �B     p Z     �B     xZ�X/��%�T^/��
+X`/��%�T^/�                       M A R V E L  1 . H U N t F i �B     p Z     �B     BHF�X/�j�w�^/�j�w�^/�j�w�^/�                       M A R V E L ~ 2 . H U N t F i �B     � �     �B     0\[/��"y�[/���/^/��ĩ/^/� `     �X             ~ u T o r r e n t P a r t F i l e _ 1 3 4 C 5 8 5 8 6 . d a t �B     p Z     �B     0\[/��"y�[/���/^/��ĩ/^/� `     �X             ~ U T O R R ~ 1 . D A T                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+*/
