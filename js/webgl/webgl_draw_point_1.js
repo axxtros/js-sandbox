@@ -1,16 +1,15 @@
 "use strict";
 
-function init() {
+  var glProgram = null;
+  var vertexShader = null;
+  var fragmentShader = null;
+
+function main() {
   WEBGL.initWebGLContext();
   WEBGL.clearCanvas();
-}
-
-function main() {  
-  init();
-
-  WEBGL.loadShaderfile('draw_point_1.vert', gl.VERTEX_SHADER);
-  WEBGL.loadShaderfile('draw_point_1.frag', gl.FRAGMENT_SHADER);
+  WEBGL.initShader(VSHADER_SOURCE_DRAW_POINT_VER_1, FSHADER_SOURCE_DRAW_POINT_VER_1);
 
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.drawArrays(gl.POINTS, 0, 1);
 }
+

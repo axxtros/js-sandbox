@@ -9,13 +9,12 @@
 
 var canvas;
 var gl;
-var VERTEX_SHADER_SOURCE = null;
-var FRAGMENT_SHADER_SOURCE = null;
+var glShaderProgram = null;
 
 /**
  * WebGL environment common functions.
  */
-var WEBGL = (function () {
+var WEBGL = (function () {  
 
   return {
     
@@ -33,28 +32,28 @@ var WEBGL = (function () {
       gl.clear(gl.COLOR_BUFFER_BIT);
     },
 
-    loadShaderfile: function(fileName, shader) {
-      var request = new XMLHttpRequest();            
-      request.onreadystatechange = function() {
-        if(request.readyState === 4 && request.status !== 404) {
-          this.onLoadShader(request.responseText, shader);              
-        }
-      }      
+    initShader: function(vertexShaderSource, fragmentShaderSource) {
+      let compiledVertexShader = this.compileShader(vertexShaderSource, "VERTEX_SHADER");
+      let compiledFragmentShader = this.compileShader(fragmentShaderSource, "FRAGMENT_SHADER");
+      glProgram = gl.createProgram();
+      gl.attachShader(glProgram, compiledVertexShader);
+      gl.attachShader(glProgram, compiledFragmentShader);
+      gl.linkProgram(glProgram);
+      if (!gl.getProgramParameter(glProgram, gl.LINK_STATUS)) {
+        console.log("Unable to initialize the shader program!");
+      }					
+      gl.useProgram(glProgram);
     },
 
-    onLoadShader: function(fileString, shaderType) {
-      if(shaderType == gl.VERTEX_SHADER) {
-        VERTEX_SHADER_SOURCE = fileString;
-      } else if(shaderType == gl.FRAGMENT_SHADER) {
-        FRAGMENT_SHADER_SOURCE = fileString;
+    compileShader: function(shaderSource, shaderType) {
+      let shader = gl.createShader(shaderType === "VERTEX_SHADER" ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER);
+      gl.shaderSource(shader, shaderSource);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.log("Error compiling shader: " + gl.getShaderInfoLog(shader));
       }
-      if (VERTEX_SHADER_SOURCE && FRAGMENT_SHADER_SOURCE) {
-        
-        
-
-      }
+      return shader;
     }
-
 
   };
 
