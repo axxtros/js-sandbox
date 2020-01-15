@@ -1,5 +1,9 @@
- //vertex shader
- void main() {
-  gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
-  gl_PointSize = 10.0;
- };
+#define GLSLIFY 1
+
+/*
+ * The main program
+ */
+void main() {  
+    // Vertex shader output
+    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
+}

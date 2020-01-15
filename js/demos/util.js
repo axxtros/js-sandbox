@@ -34,3 +34,7 @@ function generateRandomOddNumber(minValue, maxValue) {
 function generateRandomNumber(minValue, maxValue) {
 	return Math.floor(Math.random() * (maxValue - minValue + 1) + minValue);
 }
+
+function refreshPage() {
+	location.reload();
+}

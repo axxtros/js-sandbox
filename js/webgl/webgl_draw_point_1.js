@@ -5,8 +5,8 @@
   var fragmentShader = null;
 
 function main() {
-  WEBGL.initWebGLContext();
-  WEBGL.clearCanvas();
+  WEBGL.initWebGLContext("webgl_canvas");
+  WEBGL.clearCanvasBlack();
   WEBGL.initShaders(VSHADER_SOURCE_DRAW_POINT_VER_1, FSHADER_SOURCE_DRAW_POINT_VER_1);
 
   WEBGL.shaderType.FRAGMENT_SHADER;  

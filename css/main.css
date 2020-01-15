@@ -27,9 +27,28 @@ body {
 }
 
 .header-demo-backlink-wrapper {
-	float: right;	
+	float: right;
+	padding-right: 10px;	
+	background-color: transparent;
+}
+
+.canvas-button-wrapper {
+	float: left;
+}
+
+.refres-page-button {
+	margin: 0 0 0 20px;
 	font-weight: bold;
-	padding: 6px 10px 0 0;		
+	height: 30px;
+	border: none;
+	color: white;
+	background-color: #30a4ff;
+	border-left: 1px solid #d6d7d8;
+  border-right: 1px solid #d6d7d8;
+}
+
+.refres-page-button:hover {
+	cursor: pointer;
 }
 
 /* according panel start ----------------------------------------------------*/
@@ -138,7 +157,7 @@ body {
 
 .link-separator {
 	display: block;
-	height: 20px;
+	height: 12px;
 }
 
 .section-wrapper {

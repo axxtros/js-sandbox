@@ -1,46 +1,43 @@
-//hexagons tanulmányok 2
-//08/10/2019 axtros@gmail.com
+/* line_interesting.html css */
 
-//https://www.redblobgames.com/grids/hexagons/
-
-var MAP_BACKGROUND_COLOR = '#cccccc';
-var HEX_COLOR= '#000';
-
-var hexagonCanvas;
-var hexagonContext;
-
-var hexaSize = 40;
-var firstCoordX = 40;
-var firstCoordY = 40;
-
-var mousePos = {
-  x: 0,
-  y: 0
+.accordnig-panel-content {
+  display: block;
 }
 
-function initHexagons() {
-  initCanvases();
-  
-  drawHexaMapGrid(1, 1);
+/*canvas ----------------------------------------------------------------------*/
+.descartes-cord-system-wrapper {
+  float: left;
 }
 
-function initCanvases() {
-	hexagonCanvas = document.getElementById("hexagon-canvas-id");
-	hexagonContext = hexagonCanvas.getContext("2d");
-	hexagonContext.scale(1, 1);
-	hexagonContext.fillStyle = MAP_BACKGROUND_COLOR;
-	hexagonContext.fillRect(0, 0, hexagonCanvas.width, hexagonCanvas.height);
+/*form ------------------------------------------------------------------------*/
+.line-interesting-form-wrapper {
+  float: left;  
 }
 
-//“odd-q” vertical layout shoves odd columns down
-function drawHexaMapGrid(rowNum, columnNum) {
-  var coordX = firstCoordX;
-  var coordY = firstCoordY;
-  var columnCounter = 0;
+.line-form {
+  float: left;
+  margin: 5px 10px 5px 10px;  
+  padding: 10px;
+}
 
-  for(column = 0; column != columnNum; column++) {
-    for(row = 0; row != rowNum; row++) {
-      drawHexagon(false, coordX, coordY, hexaSize, HEX_COLOR);
-      coordY += getFlatHexaHeight(hexaSize);
-    }
-  
+.red-line-form {
+  background-color: #ffa5a5;
+}
+
+.blue-line-form {
+  background-color: #b7ddff;
+}
+
+.line-name-div {
+  font-weight: bold;
+}
+
+.line-interesting-form-wrapper {
+  margin: 10px;  
+  padding: 10px;
+}
+
+.green-line-form {
+  clear: both;
+  background-color: #b5fba6;
+}

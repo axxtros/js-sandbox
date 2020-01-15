@@ -9,13 +9,14 @@
 "use strict";
 
 //global variables
-var canvas;
 var gl;
 
 /**
  * WebGL environment common functions.
  */
 var WEBGL = (function () {
+
+  var canvas;
 
   //private variables and functions    
   const SahderType = {
@@ -40,8 +41,8 @@ var WEBGL = (function () {
     shaderType: SahderType,
 
     //functions
-    initWebGLContext: function() {
-      canvas = document.getElementById("webgl_canvas");
+    initWebGLContext: function(canvasName) {
+      canvas = document.getElementById(canvasName);
       gl = canvas.getContext('webgl');
       if(!gl) {
         console.log('Failed to get the rendering context for WebGL!');
@@ -71,10 +72,49 @@ var WEBGL = (function () {
     /**
      * Return the current WebGL program.
      */
-    getCurrentProgram: function() {
+    getCurrentGLSLProgram: function() {
       return gl.getParameter(gl.CURRENT_PROGRAM);
+    },
+
+    getWebGLCanvas: function() {
+      return canvas;
     }
 
   };
 
 }()); //WEBGL end
+
+var glMatrix = (function() {
+
+  
+
+  return {
+
+  };
+}()); //glMatrix
+
+var glMath = (function() {
+
+  const EPSILON = 0.000001;       //tolerance number
+  const DEGREE = Math.PI / 180;
+  const ANGLE = 180 / Math.PI;
+
+  return {
+
+    getRadian: function(angle) {
+      return DEGREE * angle;
+    },
+
+    getAngle: function(radian) {
+      return ANGLE * radian;
+    },
+
+    /**
+     * Compares two numbers within the tolerance limits.
+     */
+    isEquals: function(value1, value2) {
+      return Math.abs(value1 - value2) <= EPSILON * Math.max(Math.abs(value1), Math.abs(value2), 1.0);
+    }
+
+  };
+}()); //glMath

@@ -1,5 +1,6 @@
 "use strict";
 
+var canvas;
 var glProgram = null;
 var vertexShader = null;
 var fragmentShader = null;
@@ -7,18 +8,21 @@ var fragmentShader = null;
 var a_position;
 var a_size;
 var u_color;
+
 var Point = {
   x: 0,
   y: 0
 }
+
 var pointArray = new Array();
 
 function main() {  
-  WEBGL.initWebGLContext();    
+  WEBGL.initWebGLContext("webgl_canvas");  
   WEBGL.initShaders(VSHADER_SOURCE_DRAW_POINT_VER_2, FSHADER_SOURCE_DRAW_POINT_VER_2);
-  canvas.addEventListener("click", onMouseClick, false);
-  
-  let glProgram = WEBGL.getCurrentProgram();
+  WEBGL.getWebGLCanvas().addEventListener("click", onMouseClick, false);
+  canvas = WEBGL.getWebGLCanvas();
+
+  let glProgram = WEBGL.getCurrentGLSLProgram();
   a_position = gl.getAttribLocation(glProgram, 'a_position');    
   a_size = gl.getAttribLocation(glProgram, 'a_size');
   u_color = gl.getUniformLocation(glProgram, 'u_color');
@@ -30,7 +34,7 @@ function main() {
   gl.drawArrays(gl.POINTS, 0, 1);  
 }
 
-function onMouseClick(ev) {
+function onMouseClick(ev) {  
   let rect = canvas.getBoundingClientRect();
   let x = ev.clientX;
   let y = ev.clientY;
@@ -50,9 +54,16 @@ function onMouseClick(ev) {
 function drawPoint() {
   WEBGL.clearCanvasBlack();
   for(let i = 0; i != pointArray.length; i++) {
-    gl.vertexAttrib3f(a_position, pointArray[i].x, pointArray[i].y, 0.0);
-    gl.uniform4f(u_color, 1.0, 1.0, 0.0, 1.0);  
-    gl.drawArrays(gl.POINTS, 0, 1);
-  }  
-}
 
+    if(pointArray[i].y > 0.5) {
+      gl.uniform4f(u_color, 1.0, 0.0, 0.0, 1.0);  
+    } else if(pointArray[i].y <= 0.5 && pointArray[i].y >= -0.5) {
+      gl.uniform4f(u_color, 0.0, 1.0, 0.0, 1.0);
+    } else {
+      gl.uniform4f(u_color, 0.0, 0.0, 1.0, 1.0);
+    }  
+
+    gl.vertexAttrib3f(a_position, pointArray[i].x, pointArray[i].y, 0.0);    
+    gl.drawArrays(gl.POINTS, 0, 1);
+  }
+}

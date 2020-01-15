@@ -40,7 +40,7 @@ function init_dungeon_generator() {
 	initCanvases();	
 	//initMapMatrix(mazeCanvas.height / MAZE_SIZE, mazeCanvas.width / MAZE_SIZE);	 	 
 	
-	generateDungeon(mazeCanvas.height / MAZE_SIZE, mazeCanvas.width / MAZE_SIZE, 3, 21, 3, 21, 10);
+	generateDungeon(mazeCanvas.height / MAZE_SIZE, mazeCanvas.width / MAZE_SIZE, 3, 9, 3, 9, 100);
 
 	drawMapMatrix(mazeCanvas, mazeContext, mapMatrix, MAZE_SIZE, false);
 }
@@ -97,7 +97,7 @@ function generateDungeon(mapRow, mapColumn, roomMinWidth, roomMaxWidth, roomMinH
 	 deletedFakeTargetGrid(mapMatrix, MAP_DOOR_GRID, MAP_EMPTY_GRID, 3);
 	 //7. kitölri a map-ról az esetlegesen fentmaradt magányos maze grid-eket
 	 deletedFakeTargetGrid(mapMatrix, MAP_MAZE_GRID, MAP_EMPTY_GRID, 4);
-
+	 
 	 return mapMatrix;
 }
 

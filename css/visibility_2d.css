@@ -1,6 +1,7 @@
 /* 2d_visibility.css css */
 
-.canvas-system-wrapper {	
+.canvas-system-wrapper {
+	float: left;	
 	margin: 0 auto;
 	margin-top: 5px;
 	margin-bottom: 5px;	
