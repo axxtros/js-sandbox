@@ -82,18 +82,30 @@ var WEBGL = (function () {
 
   };
 
-}()); //WEBGL end
+}()); //WEBGL -----------------------------------------------------------------
 
-var glMatrix = (function() {
-
-  
+var vector2D = (function() {
 
   return {
 
   };
-}()); //glMatrix
+}()); //vector2D --------------------------------------------------------------
 
-var glMath = (function() {
+var vector3D = (function() {
+
+  return {
+
+  };
+}()); //vector3D --------------------------------------------------------------
+
+var matrix4 = (function() {
+
+  return {
+
+  };
+}()); //matrix4 ---------------------------------------------------------------
+
+var commonMath = (function() {
 
   const EPSILON = 0.000001;       //tolerance number
   const DEGREE = Math.PI / 180;
@@ -117,4 +129,4 @@ var glMath = (function() {
     }
 
   };
-}()); //glMath
+}()); //commonMath ------------------------------------------------------------
