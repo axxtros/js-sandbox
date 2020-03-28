@@ -72,7 +72,7 @@ class MapControl {
         for(let mapCoordH = 0; mapCoordH != this.getHeight(); mapCoordH++) {
           let mapTile: MapTile = this.getMapMatrix()[mapCoordW][mapCoordH];
           if(mapTile.getType() == tileType) {
-            return mapTile;
+            return mapTile;   //first!!!
           }
         }
       }      
@@ -107,6 +107,22 @@ class MapControl {
    */
   getDummyMapTile(): MapTile {
     return new MapTile(new Coord(-1, -1), new Coord(-100, -100), TILE_TYPE.EMPTY);
+  }
+
+  printMapToConsle(): void {
+    if(this.mapMatrix != null) {
+      for(let mapCoordH = 0; mapCoordH != this.getHeight(); mapCoordH++) {
+        let rowTiles: string = "";
+        for(let mapCoordW = 0; mapCoordW != this.getWidth(); mapCoordW++) {        
+          let mapTile: MapTile = this.getMapMatrix()[mapCoordW][mapCoordH];
+          rowTiles += mapTile.toStringLight() + '|';
+        }
+        console.log(rowTiles);
+        console.log('--- ' + (mapCoordH + 1) + '.row ---');
+      }
+    } else {
+      console.log('Map is empty!');
+    }    
   }
 
 }

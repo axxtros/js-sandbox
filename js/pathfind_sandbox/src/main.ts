@@ -6,8 +6,9 @@ class Main {
 
   private canvas: any;
   private context: any;    
-  private util: any;
   private draw: any;
+  private mapControl: any;
+  private util: any;
   
   headerDiv = document.getElementById('header-wrapper-id') as HTMLElement;
   footerDiv = document.getElementById('footer-wrapper-id') as HTMLElement;
@@ -38,9 +39,9 @@ class Main {
     this.context = this.canvas.getContext('2d');
     this.context.scale(1, 1);        
 
-    let map: MapControl = new MapControl(tileNumberHorizontal, tileNumberVertical); //ezt majd limitált kertek között az UI-ről lehessen beállítani
-    this.util = new Util(this.canvas, this.context, map);
-    this.draw = new Draw(this.canvas, this.context, map, this.util);
+    this.mapControl = new MapControl(tileNumberHorizontal, tileNumberVertical); //ezt majd limitált kertek között az UI-ről lehessen beállítani
+    this.util = new Util(this.canvas, this.context, this.mapControl);
+    this.draw = new Draw(this.canvas, this.context, this.mapControl, this.util);
   }
 
   private main(): void {
@@ -50,6 +51,11 @@ class Main {
   //a canvas tile pontos beazonosítása miatt az ablak aktuális scroll-ját is figyelembe kell venni
   private updateWindow(): void {    
     //this.util.updateScrollOffsets(window.pageXOffset, window.pageYOffset);
+  }
+
+  startAStar(): void {
+    let astar: AStar = new AStar(this.draw, this.mapControl);
+    astar.start();
   }
 
 }

@@ -34,13 +34,17 @@ var Main = (function () {
         this.canvas.height = canvasWrapperDivHeight;
         this.context = this.canvas.getContext('2d');
         this.context.scale(1, 1);
-        var map = new MapControl(tileNumberHorizontal, tileNumberVertical);
-        this.util = new Util(this.canvas, this.context, map);
-        this.draw = new Draw(this.canvas, this.context, map, this.util);
+        this.mapControl = new MapControl(tileNumberHorizontal, tileNumberVertical);
+        this.util = new Util(this.canvas, this.context, this.mapControl);
+        this.draw = new Draw(this.canvas, this.context, this.mapControl, this.util);
     };
     Main.prototype.main = function () {
     };
     Main.prototype.updateWindow = function () {
+    };
+    Main.prototype.startAStar = function () {
+        var astar = new AStar(this.draw, this.mapControl);
+        astar.start();
     };
     return Main;
 }());
@@ -344,7 +348,35 @@ var MapControl = (function () {
     MapControl.prototype.getDummyMapTile = function () {
         return new MapTile(new Coord(-1, -1), new Coord(-100, -100), TILE_TYPE.EMPTY);
     };
+    MapControl.prototype.printMapToConsle = function () {
+        if (this.mapMatrix != null) {
+            for (var mapCoordH = 0; mapCoordH != this.getHeight(); mapCoordH++) {
+                var rowTiles = "";
+                for (var mapCoordW = 0; mapCoordW != this.getWidth(); mapCoordW++) {
+                    var mapTile = this.getMapMatrix()[mapCoordW][mapCoordH];
+                    rowTiles += mapTile.toStringLight() + '|';
+                }
+                console.log(rowTiles);
+                console.log('--- ' + (mapCoordH + 1) + '.row ---');
+            }
+        }
+        else {
+            console.log('Map is empty!');
+        }
+    };
     return MapControl;
+}());
+var AStar = (function () {
+    function AStar(draw, mapControl) {
+        this.draw = draw;
+        this.mapControl = mapControl;
+        this.map = mapControl.getMapMatrix();
+        mapControl.printMapToConsle();
+    }
+    AStar.prototype.start = function () {
+        console.log('astar is ready to run...');
+    };
+    return AStar;
 }());
 var TILE_TYPE;
 (function (TILE_TYPE) {
@@ -393,6 +425,11 @@ var MapTile = (function () {
     };
     MapTile.prototype.toString = function () {
         console.log('mapX: ' + this.getMapCoord().getX() + '  mapY: ' + this.getMapCoord().getY() + '  type: ' + TILE_TYPE[this.getType()]);
+    };
+    MapTile.prototype.toStringLight = function () {
+        var typeTinyName = TILE_TYPE[this.getType()];
+        typeTinyName = typeTinyName.substring(0, 1);
+        return 'mX:' + this.getMapCoord().getX() + '  mY:' + this.getMapCoord().getY() + ' tp:' + typeTinyName;
     };
     return MapTile;
 }());

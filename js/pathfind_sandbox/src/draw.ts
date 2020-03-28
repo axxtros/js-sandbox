@@ -64,9 +64,9 @@ class Draw {
         let mapTile: MapTile = this.mapControl.getMapMatrix()[mapCoordW][mapCoordH];
         // console.log('draw mapTile mapX: ' + mapTile.getMapCoord().getX() + ' mapY: ' + mapTile.getMapCoord().getY() + ' drawX: ' + mapTile.getDrawCoord().getX() + ' drawY: ' + mapTile.getDrawCoord().getY());         
         this.drawMapTile(mapTile);
-      }      
+      }
     }
-  } 
+  }
 
   //events --------------------------------------------------------------------
   mouseButtonDownEvent(): void {    
@@ -108,15 +108,15 @@ class Draw {
 
   clickCanvasEvent(): void {    
     if(this.currentSelectedTile != null) {      
-      if(this.isMoveStartTile && this.currentSelectedTile.getType() != TILE_TYPE.END) {  //START tile mozgatása
+      if(this.isMoveStartTile && this.currentSelectedTile.getType() != TILE_TYPE.END) {  //START tile mozgatása (END típusú tile-t nem takarhatja le)
         
-        let hiddenTile = this.mapControl.getStartTile();
+        let hiddenTile = this.mapControl.getStartTile();                            //lekérdezzük a térképről a START tile-t
         this.changeTileTypeAndDraw(hiddenTile, this.hiddenStartTileType);           //visszaállítjuk a letakart tile eredeti típusát
-        this.hiddenStartTileType = this.currentSelectedTile.getType();              //itt kapja meg annak a tile-nak a típusát, amit le fog takarni a START tile
-        this.changeTileTypeAndDraw(this.currentSelectedTile, TILE_TYPE.START);      //az újonan kiválasztott tile letakarása a START tile-al
+        this.hiddenStartTileType = this.currentSelectedTile.getType();              //elmeni egy ideiglenes változóba annak a tile-nak a típusát, amit le fog takarni a START tile
+        this.changeTileTypeAndDraw(this.currentSelectedTile, TILE_TYPE.START);      //az újonan kiválasztott tile letakarása (felülírása) a START tile-al
         this.mapControl.setStartTile(this.currentSelectedTile);                     //beálítjuk az akutális start tile-t a térképen
 
-      } else if(this.isMoveEndTile && this.currentSelectedTile.getType() != TILE_TYPE.START) { //END tile mozgatása
+      } else if(this.isMoveEndTile && this.currentSelectedTile.getType() != TILE_TYPE.START) { //END tile mozgatása (START típusú tile-t nem takarhatja le)
         
         let hiddenTile = this.mapControl.getEndTile();
         this.changeTileTypeAndDraw(hiddenTile, this.hiddenEndTileType);
@@ -124,13 +124,13 @@ class Draw {
         this.changeTileTypeAndDraw(this.currentSelectedTile, TILE_TYPE.END);
         this.mapControl.setEndTile(this.currentSelectedTile);
 
-      } else {  //fal rajzolás
+      } else {  //draw/delete WALL
         switch(this.currentSelectedTile.getType()) {
           case TILE_TYPE.EMPTY:           
-            this.changeTileTypeAndDraw(this.currentSelectedTile, TILE_TYPE.WALL); //üres helyre fal tile            
+            this.changeTileTypeAndDraw(this.currentSelectedTile, TILE_TYPE.WALL); //EMPTY -> WALL
           break;
           case TILE_TYPE.WALL:
-            this.changeTileTypeAndDraw(this.currentSelectedTile, TILE_TYPE.EMPTY);  //fal helyére üres tile            
+            this.changeTileTypeAndDraw(this.currentSelectedTile, TILE_TYPE.EMPTY);  //WALL -> EMPTY
           break;        
         }
       }
