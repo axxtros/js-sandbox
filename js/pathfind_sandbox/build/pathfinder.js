@@ -46,6 +46,9 @@ var Main = (function () {
         var astar = new AStar(this.draw, this.mapControl);
         astar.start();
     };
+    Main.prototype.printMapToConsole = function () {
+        this.mapControl.printMapToConsole();
+    };
     return Main;
 }());
 window.onload = function () {
@@ -348,7 +351,7 @@ var MapControl = (function () {
     MapControl.prototype.getDummyMapTile = function () {
         return new MapTile(new Coord(-1, -1), new Coord(-100, -100), TILE_TYPE.EMPTY);
     };
-    MapControl.prototype.printMapToConsle = function () {
+    MapControl.prototype.printMapToConsole = function () {
         if (this.mapMatrix != null) {
             for (var mapCoordH = 0; mapCoordH != this.getHeight(); mapCoordH++) {
                 var rowTiles = "";
@@ -371,10 +374,10 @@ var AStar = (function () {
         this.draw = draw;
         this.mapControl = mapControl;
         this.map = mapControl.getMapMatrix();
-        mapControl.printMapToConsle();
+        mapControl.printMapToConsole();
     }
     AStar.prototype.start = function () {
-        console.log('astar is ready to run...');
+        console.log('astar is ready to run...2');
     };
     return AStar;
 }());

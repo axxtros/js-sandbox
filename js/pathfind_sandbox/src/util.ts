@@ -1,4 +1,3 @@
-
 class Util {  
 
   private canvas: any;
@@ -44,6 +43,6 @@ class Util {
   updateScrollOffsets(scrollOffsetX: number, scrollOffsetY: number): void {
     this.scrollOffsetX = scrollOffsetX;
     this.scrollOffsetY = scrollOffsetY;
-  }  
+  }
 
 }
