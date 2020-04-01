@@ -109,7 +109,7 @@ class MapControl {
     return new MapTile(new Coord(-1, -1), new Coord(-100, -100), TILE_TYPE.EMPTY);
   }
 
-  printMapToConsle(): void {
+  printMapToConsole(): void {
     if(this.mapMatrix != null) {
       for(let mapCoordH = 0; mapCoordH != this.getHeight(); mapCoordH++) {
         let rowTiles: string = "";

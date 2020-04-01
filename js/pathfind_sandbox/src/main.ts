@@ -58,6 +58,10 @@ class Main {
     astar.start();
   }
 
+  printMapToConsole(): void {
+    this.mapControl.printMapToConsole();
+  }
+
 }
 
 window.onload = () => {

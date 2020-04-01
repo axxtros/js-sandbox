@@ -9,11 +9,11 @@ class AStar {
     this.mapControl = mapControl;
     this.map = mapControl.getMapMatrix();
 
-    mapControl.printMapToConsle();
+    mapControl.printMapToConsole();
   }
 
   start(): void {
-    console.log('astar is ready to run...');
+    console.log('astar is ready to run...2');
   }
 
   //getters/setters -----------------------------------------------------------
