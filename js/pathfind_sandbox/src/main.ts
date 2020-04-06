@@ -54,7 +54,7 @@ class Main {
   }
 
   startAStar(): void {
-    let astar: AStar = new AStar(this.draw, this.mapControl, Constains.ASTAR_DISABLED_DIAGONAL);    
+    let astar: AStar = new AStar(this.draw, this.mapControl, Constains.ASTAR_ENABLED_DIAGONAL, Constains.ASTAR_COST, Constains.ASTAR_DIAGONAL_COST);
   }
 
   printMapToConsole(): void {

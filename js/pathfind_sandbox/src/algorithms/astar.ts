@@ -13,13 +13,17 @@ class AStar {
   private map: MapTile[][];
   private openList: MapTile[];
   private closeList: MapTile[];
-  private isDiagonal: boolean;  
+  private isDiagonal: boolean;
+  private cost: number;
+  private diagonalCost: number;
 
-  constructor(draw: Draw, mapControl: MapControl, isDiagonal: boolean) {
+  constructor(draw: Draw, mapControl: MapControl, isDiagonal: boolean, cost: number, diagonalCost: number) {
     this.draw = draw;
     this.mapControl = mapControl;    
     this.map = mapControl.getMapMatrix();
     this.isDiagonal = isDiagonal;
+    this.cost = cost;
+    this.diagonalCost = diagonalCost;
     this.openList = new Array();
     this.openList.push(mapControl.getStartTile());        //az open list-nek tartalmaznia kell a start tile-t
     this.closeList = new Array();
@@ -27,13 +31,23 @@ class AStar {
   }
 
   run(): void {
-    console.log('astar is started ' + new Date().toLocaleString());
+    //console.log('astar is started ' + new Date().toLocaleString());
 
+    this.mapControl.getStartTile().toString();
+    let neighborsTiles = this.mapControl.getNeighbourTiles(this.mapControl.getStartTile(), this.isDiagonal, this.cost, this.diagonalCost);
     
 
-    console.log('astar is end ' + new Date().toLocaleString());
+    this.toConsoleTileArray(neighborsTiles);
+
+    //console.log('astar is end ' + new Date().toLocaleString());
   }
 
   //getters/setters -----------------------------------------------------------
+  toConsoleTileArray(tileArray: MapTile[]): void {
+    for(let i = 0; i != tileArray.length; i++) {
+      let tile = tileArray[i];
+      console.log('id: ' + tile.getId() + ' mX: ' + tile.getMapCoord().getX() + ' mY: ' + tile.getMapCoord().getY() + ' type: ' + TILE_TYPE[tile.getType()] + ' g: ' + tile.getG() + ' h: ' + tile.getH() + ' f: ' + tile.getF());
+    }
+  }
 
 }

@@ -30,6 +30,8 @@ class Constains {
 
   static ASTAR_ENABLED_DIAGONAL: boolean = true;
   static ASTAR_DISABLED_DIAGONAL: boolean = false;
+  static ASTAR_COST: number = 1;
+  static ASTAR_DIAGONAL_COST: number = 1;
   static ASTAR_ERROR_MSG_MAP_IS_NULL: string = "ERROR: Map is null or not exists!";
 
   constructor() {

@@ -100,7 +100,7 @@ class MapTile {
   // }
 
   toString(): void {    
-    console.log('mapX: ' + this.getMapCoord().getX() + '  mapY: ' + this.getMapCoord().getY() + '  type: ' + TILE_TYPE[this.getType()]);
+    console.log('id: ' + this.getId() + ' mX: ' + this.getMapCoord().getX() + '  mY: ' + this.getMapCoord().getY() + '  type: ' + TILE_TYPE[this.getType()]);
   }
 
   toStringLight(): string {
