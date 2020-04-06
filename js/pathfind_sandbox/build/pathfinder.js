@@ -1,17 +1,4 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var main;
 var Main = (function () {
     function Main() {
@@ -43,8 +30,7 @@ var Main = (function () {
     Main.prototype.updateWindow = function () {
     };
     Main.prototype.startAStar = function () {
-        var astar = new AStar(this.draw, this.mapControl);
-        astar.start();
+        var astar = new AStar(this.draw, this.mapControl, Constains.ASTAR_DISABLED_DIAGONAL);
     };
     Main.prototype.printMapToConsole = function () {
         this.mapControl.printMapToConsole();
@@ -271,6 +257,17 @@ var Draw = (function () {
     };
     return Draw;
 }());
+var NEIGHBOUR_TYPE;
+(function (NEIGHBOUR_TYPE) {
+    NEIGHBOUR_TYPE[NEIGHBOUR_TYPE["TOP"] = 1] = "TOP";
+    NEIGHBOUR_TYPE[NEIGHBOUR_TYPE["TOP_RIGHT"] = 2] = "TOP_RIGHT";
+    NEIGHBOUR_TYPE[NEIGHBOUR_TYPE["RIGHT"] = 3] = "RIGHT";
+    NEIGHBOUR_TYPE[NEIGHBOUR_TYPE["BOTTOM_RIGHT"] = 4] = "BOTTOM_RIGHT";
+    NEIGHBOUR_TYPE[NEIGHBOUR_TYPE["BOTTOM"] = 5] = "BOTTOM";
+    NEIGHBOUR_TYPE[NEIGHBOUR_TYPE["BOTTOM_LEFT"] = 6] = "BOTTOM_LEFT";
+    NEIGHBOUR_TYPE[NEIGHBOUR_TYPE["LEFT"] = 7] = "LEFT";
+    NEIGHBOUR_TYPE[NEIGHBOUR_TYPE["TOP_LEFT"] = 8] = "TOP_LEFT";
+})(NEIGHBOUR_TYPE || (NEIGHBOUR_TYPE = {}));
 var MapControl = (function () {
     function MapControl(width, height) {
         this.width = width;
@@ -282,10 +279,11 @@ var MapControl = (function () {
     }
     MapControl.prototype.initMap = function () {
         var drawCoordX = Constains.MAP_LEFT_COORD, drawCoordY = Constains.MAP_TOP_COORD;
+        var tileId = 1;
         for (var mapCoordW = 0; mapCoordW != this.width; mapCoordW++) {
             this.mapMatrix[mapCoordW] = [];
             for (var mapCoordH = 0; mapCoordH != this.height; mapCoordH++) {
-                var mapTile = new MapTile(new Coord(mapCoordW, mapCoordH), new Coord(drawCoordY, drawCoordX), TILE_TYPE.EMPTY);
+                var mapTile = new MapTile(tileId++, new Coord(mapCoordW, mapCoordH), new Coord(drawCoordY, drawCoordX), TILE_TYPE.EMPTY);
                 this.mapMatrix[mapCoordW][mapCoordH] = mapTile;
                 drawCoordX += Constains.MAP_TILE_SIZE;
             }
@@ -299,6 +297,19 @@ var MapControl = (function () {
         this.mapMatrix[startTileCoord.getX()][startTileCoord.getY()].setType(TILE_TYPE.START);
         var endTileCoord = new Coord((Math.floor(this.width / 2) + Math.floor(this.width / 8)), Math.floor(this.height / 2));
         this.mapMatrix[endTileCoord.getX()][endTileCoord.getY()].setType(TILE_TYPE.END);
+    };
+    MapControl.prototype.manhattanDistance = function (nodeTile, goalTile, cost) {
+        var dx = Math.abs(nodeTile.getMapCoord().getX() - goalTile.getMapCoord().getX());
+        var dy = Math.abs(nodeTile.getMapCoord().getY() - goalTile.getMapCoord().getY());
+        return cost * (dx + dy);
+    };
+    MapControl.prototype.diagonalDistance = function (nodeTile, goalTile, cost, diagonalCost) {
+        var dx = Math.abs(nodeTile.getMapCoord().getX() - goalTile.getMapCoord().getX());
+        var dy = Math.abs(nodeTile.getMapCoord().getY() - goalTile.getMapCoord().getY());
+        return cost * (dx + dy) + (diagonalCost - 2 * cost) * Math.min(dx, dy);
+    };
+    MapControl.prototype.isExistTile = function (mapTileArray, searchedTile) {
+        return mapTileArray.some(function (id) { return searchedTile.getId(); });
     };
     MapControl.prototype.getStartTile = function () {
         return this.startTile;
@@ -345,11 +356,41 @@ var MapControl = (function () {
             this.getMapTile(selectedTile.getMapCoord().getX(), selectedTile.getMapCoord().getY()).setType(tileType);
         }
     };
+    MapControl.prototype.getNeighbourTile = function (tile, neighbourType) {
+        var neighbourTile;
+        switch (neighbourType) {
+            case NEIGHBOUR_TYPE.TOP:
+                neighbourTile = this.getMapTile(tile.getMapCoord().getX(), tile.getMapCoord().getY() - 1);
+                break;
+            case NEIGHBOUR_TYPE.TOP_RIGHT:
+                neighbourTile = this.getMapTile(tile.getMapCoord().getX() + 1, tile.getMapCoord().getY() - 1);
+                break;
+            case NEIGHBOUR_TYPE.RIGHT:
+                neighbourTile = this.getMapTile(tile.getMapCoord().getX() + 1, tile.getMapCoord().getY());
+                break;
+            case NEIGHBOUR_TYPE.BOTTOM_RIGHT:
+                neighbourTile = this.getMapTile(tile.getMapCoord().getX() + 1, tile.getMapCoord().getY() + 1);
+                break;
+            case NEIGHBOUR_TYPE.BOTTOM:
+                neighbourTile = this.getMapTile(tile.getMapCoord().getX(), tile.getMapCoord().getY() + 1);
+                break;
+            case NEIGHBOUR_TYPE.BOTTOM_LEFT:
+                neighbourTile = this.getMapTile(tile.getMapCoord().getX() - 1, tile.getMapCoord().getY() + 1);
+                break;
+            case NEIGHBOUR_TYPE.LEFT:
+                neighbourTile = this.getMapTile(tile.getMapCoord().getX() - 1, tile.getMapCoord().getY());
+                break;
+            case NEIGHBOUR_TYPE.TOP_LEFT:
+                neighbourTile = this.getMapTile(tile.getMapCoord().getX() - 1, tile.getMapCoord().getY() - 1);
+                break;
+        }
+        return neighbourTile;
+    };
     MapControl.prototype.getMapTile = function (mapCoordW, mapCoordH) {
         return this.getMapMatrix()[mapCoordW][mapCoordH];
     };
     MapControl.prototype.getDummyMapTile = function () {
-        return new MapTile(new Coord(-1, -1), new Coord(-100, -100), TILE_TYPE.EMPTY);
+        return new MapTile(0, new Coord(-1, -1), new Coord(-100, -100), TILE_TYPE.EMPTY);
     };
     MapControl.prototype.printMapToConsole = function () {
         if (this.mapMatrix != null) {
@@ -370,14 +411,19 @@ var MapControl = (function () {
     return MapControl;
 }());
 var AStar = (function () {
-    function AStar(draw, mapControl) {
+    function AStar(draw, mapControl, isDiagonal) {
         this.draw = draw;
         this.mapControl = mapControl;
         this.map = mapControl.getMapMatrix();
-        mapControl.printMapToConsole();
+        this.isDiagonal = isDiagonal;
+        this.openList = new Array();
+        this.openList.push(mapControl.getStartTile());
+        this.closeList = new Array();
+        this.run();
     }
-    AStar.prototype.start = function () {
-        console.log('astar is ready to run...2');
+    AStar.prototype.run = function () {
+        console.log('astar is started ' + new Date().toLocaleString());
+        console.log('astar is end ' + new Date().toLocaleString());
     };
     return AStar;
 }());
@@ -403,11 +449,16 @@ var Coord = (function () {
     return Coord;
 }());
 var MapTile = (function () {
-    function MapTile(mapCoord, drawCoord, type) {
+    function MapTile(id, mapCoord, drawCoord, type) {
+        this.id = id;
         this.mapCoord = mapCoord;
         this.drawCoord = drawCoord;
         this.type = type;
+        this.f = this.g = this.h = this.parentTileId = 0;
     }
+    MapTile.prototype.getId = function () {
+        return this.id;
+    };
     MapTile.prototype.getMapCoord = function () {
         return this.mapCoord;
     };
@@ -426,6 +477,21 @@ var MapTile = (function () {
     MapTile.prototype.setType = function (type) {
         this.type = type;
     };
+    MapTile.prototype.getF = function () {
+        return this.g + this.h;
+    };
+    MapTile.prototype.getG = function () {
+        return this.g;
+    };
+    MapTile.prototype.setG = function (value) {
+        this.g = value;
+    };
+    MapTile.prototype.getH = function () {
+        return this.h;
+    };
+    MapTile.prototype.setH = function (value) {
+        this.h = value;
+    };
     MapTile.prototype.toString = function () {
         console.log('mapX: ' + this.getMapCoord().getX() + '  mapY: ' + this.getMapCoord().getY() + '  type: ' + TILE_TYPE[this.getType()]);
     };
@@ -436,25 +502,6 @@ var MapTile = (function () {
     };
     return MapTile;
 }());
-var SpecTile = (function (_super) {
-    __extends(SpecTile, _super);
-    function SpecTile(mapCoord, drawCoord, type, hiddenTile) {
-        var _this = _super.call(this, mapCoord, drawCoord, type) || this;
-        _this.hiddenTile = hiddenTile;
-        return _this;
-    }
-    SpecTile.prototype.getHiddenTile = function () {
-        return this.hiddenTile;
-    };
-    SpecTile.prototype.setHiddenTile = function (tile) {
-        this.hiddenTile = tile;
-    };
-    SpecTile.prototype.toString = function () {
-        var tileString = _super.prototype.toString.call(this);
-        console.log(tileString + ' hiddenTile: ' + this.hiddenTile.toString());
-    };
-    return SpecTile;
-}(MapTile));
 var Constains = (function () {
     function Constains() {
     }
@@ -480,5 +527,8 @@ var Constains = (function () {
     Constains.MAP_SYMBOL_FONT_COLOR = '#989898';
     Constains.MAP_SYMBOL_HORIZONTAL_DISTANCE_FROM_GRIDS = 5;
     Constains.MAP_SYMBOL_VERTICAL_DISTANCE_FROM_GRIDS = 15;
+    Constains.ASTAR_ENABLED_DIAGONAL = true;
+    Constains.ASTAR_DISABLED_DIAGONAL = false;
+    Constains.ASTAR_ERROR_MSG_MAP_IS_NULL = "ERROR: Map is null or not exists!";
     return Constains;
 }());

@@ -1,3 +1,14 @@
+enum NEIGHBOUR_TYPE {
+  TOP = 1,
+  TOP_RIGHT = 2,
+  RIGHT = 3,
+  BOTTOM_RIGHT = 4,
+  BOTTOM = 5,
+  BOTTOM_LEFT = 6,
+  LEFT = 7,  
+  TOP_LEFT = 8
+}
+
 class MapControl {
 
   private width: number;
@@ -21,10 +32,11 @@ class MapControl {
     let drawCoordX = Constains.MAP_LEFT_COORD, 
         drawCoordY = Constains.MAP_TOP_COORD;
     
+    let tileId = 1;
     for(let mapCoordW = 0; mapCoordW != this.width; mapCoordW++) {
       this.mapMatrix[mapCoordW] = [];
-      for(let mapCoordH = 0; mapCoordH != this.height; mapCoordH++) {        
-        let mapTile = new MapTile(new Coord(mapCoordW, mapCoordH), new Coord(drawCoordY, drawCoordX), TILE_TYPE.EMPTY);
+      for(let mapCoordH = 0; mapCoordH != this.height; mapCoordH++) {
+        let mapTile = new MapTile(tileId++, new Coord(mapCoordW, mapCoordH), new Coord(drawCoordY, drawCoordX), TILE_TYPE.EMPTY);
         this.mapMatrix[mapCoordW][mapCoordH] = mapTile;
         // console.log('init mapTile mapX: ' + mapTile.getMapCoord().getX() + ' mapY:' + mapTile.getMapCoord().getY() + ' drawX:' + mapTile.getDrawCoord().getX() + ' drawY: ' + mapTile.getDrawCoord().getY());
         drawCoordX += Constains.MAP_TILE_SIZE;
@@ -40,6 +52,26 @@ class MapControl {
     this.mapMatrix[startTileCoord.getX()][startTileCoord.getY()].setType(TILE_TYPE.START);
     let endTileCoord: Coord = new Coord((Math.floor(this.width / 2) + Math.floor(this.width / 8)), Math.floor(this.height / 2));
     this.mapMatrix[endTileCoord.getX()][endTileCoord.getY()].setType(TILE_TYPE.END);
+  }
+
+  manhattanDistance(nodeTile: MapTile, goalTile: MapTile, cost: number): number {
+    let dx = Math.abs(nodeTile.getMapCoord().getX() - goalTile.getMapCoord().getX());
+    let dy = Math.abs(nodeTile.getMapCoord().getY() - goalTile.getMapCoord().getY());
+    return cost * (dx + dy);
+  }
+
+  /**
+   * D2 is the cost of moving diagonally.
+   * When cost = 1 and diagonalCose = 1, this is called the Chebyshev distance. When cost = 1 and diagonalCost = sqrt(2), this is called the octile distance.
+   */
+  diagonalDistance(nodeTile: MapTile, goalTile: MapTile, cost: number, diagonalCost: number): number {
+    let dx = Math.abs(nodeTile.getMapCoord().getX() - goalTile.getMapCoord().getX());
+    let dy = Math.abs(nodeTile.getMapCoord().getY() - goalTile.getMapCoord().getY());
+    return cost * (dx + dy) + (diagonalCost - 2 * cost) * Math.min(dx, dy);
+  }
+
+  isExistTile(mapTileArray: MapTile[], searchedTile: MapTile): boolean {    
+    return mapTileArray.some(id => searchedTile.getId());
   }  
 
   getStartTile(): MapTile {
@@ -98,6 +130,21 @@ class MapControl {
     }
   }
 
+  getNeighbourTile(tile: MapTile, neighbourType: NEIGHBOUR_TYPE): MapTile {
+    let neighbourTile: MapTile;
+    switch(neighbourType) {
+      case NEIGHBOUR_TYPE.TOP: neighbourTile = this.getMapTile(tile.getMapCoord().getX(), tile.getMapCoord().getY() - 1); break;
+      case NEIGHBOUR_TYPE.TOP_RIGHT: neighbourTile = this.getMapTile(tile.getMapCoord().getX() + 1, tile.getMapCoord().getY() - 1); break;
+      case NEIGHBOUR_TYPE.RIGHT: neighbourTile = this.getMapTile(tile.getMapCoord().getX() + 1, tile.getMapCoord().getY()); break;
+      case NEIGHBOUR_TYPE.BOTTOM_RIGHT: neighbourTile = this.getMapTile(tile.getMapCoord().getX() + 1, tile.getMapCoord().getY() + 1); break;
+      case NEIGHBOUR_TYPE.BOTTOM: neighbourTile = this.getMapTile(tile.getMapCoord().getX(), tile.getMapCoord().getY() + 1); break;
+      case NEIGHBOUR_TYPE.BOTTOM_LEFT: neighbourTile = this.getMapTile(tile.getMapCoord().getX() - 1, tile.getMapCoord().getY() + 1); break;
+      case NEIGHBOUR_TYPE.LEFT: neighbourTile = this.getMapTile(tile.getMapCoord().getX() - 1, tile.getMapCoord().getY()); break;
+      case NEIGHBOUR_TYPE.TOP_LEFT: neighbourTile = this.getMapTile(tile.getMapCoord().getX() - 1, tile.getMapCoord().getY() - 1); break;
+    }
+    return neighbourTile;
+  }
+
   getMapTile(mapCoordW: number, mapCoordH: number): MapTile {
     return this.getMapMatrix()[mapCoordW][mapCoordH];
   }  
@@ -106,7 +153,7 @@ class MapControl {
    * Visszaad egy üres tile-t, ami csak az inicializálás miatt szükséges. A tile nem látható a canvas-an.
    */
   getDummyMapTile(): MapTile {
-    return new MapTile(new Coord(-1, -1), new Coord(-100, -100), TILE_TYPE.EMPTY);
+    return new MapTile(0, new Coord(-1, -1), new Coord(-100, -100), TILE_TYPE.EMPTY);
   }
 
   printMapToConsole(): void {

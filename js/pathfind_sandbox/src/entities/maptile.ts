@@ -26,14 +26,25 @@ class Coord {
 
 class MapTile {
 
+  private id: number;
   private mapCoord: Coord;
   private drawCoord: Coord;
   private type: TILE_TYPE;
+  private f: number;
+  private g: number;
+  private h: number;
+  private parentTileId: number
 
-  constructor(mapCoord: Coord, drawCoord: Coord, type: TILE_TYPE) {
+  constructor(id: number, mapCoord: Coord, drawCoord: Coord, type: TILE_TYPE) {
+    this.id = id;
     this.mapCoord = mapCoord;
     this.drawCoord = drawCoord;
     this.type = type;
+    this.f = this.g = this.h = this.parentTileId = 0;    
+  }
+
+  getId(): number {
+    return this.id;
   }
 
   getMapCoord(): Coord {
@@ -60,6 +71,34 @@ class MapTile {
     this.type = type;
   }
 
+  getF(): number {
+    return this.g + this.h;
+  }
+
+  getG(): number {
+    return this.g;
+  }
+
+  setG(value: number): void {
+    this.g = value;
+  }
+
+  getH(): number {
+    return this.h;
+  }
+
+  setH(value: number): void {
+    this.h = value;
+  }
+
+  // getParentTile(): MapTile {
+  //   return this.parentTile;
+  // }
+
+  // setParentTile(parentTile: MapTile) {
+  //   this.parentTile = parentTile;
+  // }
+
   toString(): void {    
     console.log('mapX: ' + this.getMapCoord().getX() + '  mapY: ' + this.getMapCoord().getY() + '  type: ' + TILE_TYPE[this.getType()]);
   }
@@ -68,30 +107,6 @@ class MapTile {
     let typeTinyName: string = TILE_TYPE[this.getType()];
     typeTinyName = typeTinyName.substring(0, 1);
     return 'mX:' + this.getMapCoord().getX() + '  mY:' + this.getMapCoord().getY() + ' tp:' + typeTinyName;
-  }
-
-}
-
-class SpecTile extends MapTile {
-
-  private hiddenTile: MapTile;
-
-  constructor(mapCoord: Coord, drawCoord: Coord, type: TILE_TYPE, hiddenTile: MapTile) {
-    super(mapCoord, drawCoord, type);
-    this.hiddenTile = hiddenTile;
-  }
-
-  getHiddenTile(): MapTile {
-    return this.hiddenTile;
-  }
-
-  setHiddenTile(tile: MapTile): void {
-    this.hiddenTile = tile;
-  }
-
-  toString(): void {
-    let tileString = super.toString();
-    console.log(tileString + ' hiddenTile: ' + this.hiddenTile.toString());
   }
 
 }

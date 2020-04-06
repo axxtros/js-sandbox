@@ -28,6 +28,10 @@ class Constains {
   static MAP_SYMBOL_HORIZONTAL_DISTANCE_FROM_GRIDS: number = 5;
   static MAP_SYMBOL_VERTICAL_DISTANCE_FROM_GRIDS: number = 15;
 
+  static ASTAR_ENABLED_DIAGONAL: boolean = true;
+  static ASTAR_DISABLED_DIAGONAL: boolean = false;
+  static ASTAR_ERROR_MSG_MAP_IS_NULL: string = "ERROR: Map is null or not exists!";
+
   constructor() {
     //NOP
   }
