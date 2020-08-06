@@ -18,6 +18,9 @@ class Constains {
   static MAP_END_TILE_BACKGROUND_COLOR: string = '#58f770';
   static MAP_WALL_TILE_BACKGROUND_COLOR: string = '#c7d6f5';
 
+  static NEIGHBORE_TILE_BACKGROUND_COLOR: string = 'orange';
+  static MIN_TILE_BACKGROUND_COLOR: string = 'green';
+
   static MAP_TILE_BORDER_COLOR: string = '#989898';
   static MAP_TILE_CURSOR_BACKGROUND_COLOR: string = '#e4ded7';  
   static MAP_TILE_CURSOR_BORDER_COLOR: string = 'orange';
@@ -30,8 +33,8 @@ class Constains {
 
   static ASTAR_ENABLED_DIAGONAL: boolean = true;
   static ASTAR_DISABLED_DIAGONAL: boolean = false;
-  static ASTAR_COST: number = 1;
-  static ASTAR_DIAGONAL_COST: number = 1;
+  static ASTAR_COST: number = 10;
+  static ASTAR_DIAGONAL_COST: number = 14;
   static ASTAR_ERROR_MSG_MAP_IS_NULL: string = "ERROR: Map is null or not exists!";
 
   constructor() {

@@ -52,54 +52,9 @@ class MapControl {
     this.mapMatrix[startTileCoord.getX()][startTileCoord.getY()].setType(TILE_TYPE.START);
     let endTileCoord: Coord = new Coord((Math.floor(this.width / 2) + Math.floor(this.width / 8)), Math.floor(this.height / 2));
     this.mapMatrix[endTileCoord.getX()][endTileCoord.getY()].setType(TILE_TYPE.END);
-  }
-
-  getNeighbourTiles(tile: MapTile, isDiagonal: boolean, cost: number, diagonalCost: number): MapTile[] {
-    let neighbourArray: MapTile[] = new Array();
-    let neighbourTile: MapTile | null;
-    let diagonalCalc = false;
-
-    neighbourTile = this.searchNeighbourTile(tile, NEIGHBOUR_TYPE.TOP);
-    if(neighbourTile != null && this.isFreeTile(neighbourTile) && !this.isExistTile(neighbourArray, neighbourTile)) {      
-      neighbourArray.push(this.calcTileCosts(neighbourTile, diagonalCalc, cost, diagonalCost));      
-    }
-    neighbourTile = this.searchNeighbourTile(tile, NEIGHBOUR_TYPE.RIGHT);
-    if(neighbourTile != null && this.isFreeTile(neighbourTile) && !this.isExistTile(neighbourArray, neighbourTile)) {
-      neighbourArray.push(this.calcTileCosts(neighbourTile, diagonalCalc, cost, diagonalCost));      
-    }
-    neighbourTile = this.searchNeighbourTile(tile, NEIGHBOUR_TYPE.BOTTOM);
-    if(neighbourTile != null && this.isFreeTile(neighbourTile) && !this.isExistTile(neighbourArray, neighbourTile)) {
-      neighbourArray.push(this.calcTileCosts(neighbourTile, diagonalCalc, cost, diagonalCost));      
-    }
-    neighbourTile = this.searchNeighbourTile(tile, NEIGHBOUR_TYPE.LEFT);
-    if(neighbourTile != null && this.isFreeTile(neighbourTile) && !this.isExistTile(neighbourArray, neighbourTile)) {
-      neighbourArray.push(this.calcTileCosts(neighbourTile, diagonalCalc, cost, diagonalCost));      
-    }
-
-    if(isDiagonal) {
-      diagonalCalc = true;
-      neighbourTile = this.searchNeighbourTile(tile, NEIGHBOUR_TYPE.TOP_RIGHT);
-      if(neighbourTile != null && this.isFreeTile(neighbourTile) && !this.isExistTile(neighbourArray, neighbourTile)) {
-        neighbourArray.push(this.calcTileCosts(neighbourTile, diagonalCalc, cost, diagonalCost));      
-      }
-      neighbourTile = this.searchNeighbourTile(tile, NEIGHBOUR_TYPE.BOTTOM_RIGHT);
-      if(neighbourTile != null && this.isFreeTile(neighbourTile) && !this.isExistTile(neighbourArray, neighbourTile)) {
-        neighbourArray.push(this.calcTileCosts(neighbourTile, diagonalCalc, cost, diagonalCost));      
-      }
-      neighbourTile = this.searchNeighbourTile(tile, NEIGHBOUR_TYPE.BOTTOM_LEFT);
-      if(neighbourTile != null && this.isFreeTile(neighbourTile) && !this.isExistTile(neighbourArray, neighbourTile)) {
-        neighbourArray.push(this.calcTileCosts(neighbourTile, diagonalCalc, cost, diagonalCost));      
-      }
-      neighbourTile = this.searchNeighbourTile(tile, NEIGHBOUR_TYPE.TOP_LEFT);
-      if(neighbourTile != null && this.isFreeTile(neighbourTile) && !this.isExistTile(neighbourArray, neighbourTile)) {
-        neighbourArray.push(this.calcTileCosts(neighbourTile, diagonalCalc, cost, diagonalCost));      
-      }
-    }    
-    return neighbourArray;
-  }
-
-  //If is not necessary return neighbour, then return null.
-  searchNeighbourTile(tile: MapTile, neighbourType: NEIGHBOUR_TYPE): MapTile | null {    
+  }  
+  
+  searchNeighbourTile(tile: MapTile, neighbourType: NEIGHBOUR_TYPE): MapTile | null {
     switch(neighbourType) {
       case NEIGHBOUR_TYPE.TOP:
         if(tile.getMapCoord().getY() <= 0) {
@@ -144,40 +99,6 @@ class MapControl {
       default: return tile;
     }
   }  
-
-  isFreeTile(tile: MapTile): boolean {
-    return tile.getType() != TILE_TYPE.START && tile.getType() != TILE_TYPE.END && tile.getType() != TILE_TYPE.WALL;
-  }
-
-  isExistTile(mapTileArray: MapTile[], searchedTile: MapTile | null): boolean {    
-    //return !mapTileArray.some(id => searchedTile.getId());
-    if(searchedTile != null) {
-      return mapTileArray.filter(tile => tile.getId() == searchedTile.getId()).length == 1;
-    }
-    return false;
-  }
-
-  calcTileCosts(tile: MapTile, isDiagonalTile: boolean, cost: number, diagonalCost: number): MapTile {    
-    tile.setG(isDiagonalTile ? this.calcManhattanDistance(tile, this.getStartTile(), cost) : this.calcDiagonalDistance(tile, this.getStartTile(), cost, diagonalCost));
-    tile.setH(isDiagonalTile ? this.calcManhattanDistance(tile, this.getEndTile(), cost) : this.calcDiagonalDistance(tile, this.getEndTile(), cost, diagonalCost));
-    return tile;    
-  }
-
-  calcManhattanDistance(nodeTile: MapTile, goalTile: MapTile, cost: number): number {
-    let dx = Math.abs(nodeTile.getMapCoord().getX() - goalTile.getMapCoord().getX());
-    let dy = Math.abs(nodeTile.getMapCoord().getY() - goalTile.getMapCoord().getY());
-    return cost * (dx + dy);
-  }
-
-  /**
-   * D2 is the cost of moving diagonally.
-   * When cost = 1 and diagonalCose = 1, this is called the Chebyshev distance. When cost = 1 and diagonalCost = sqrt(2), this is called the octile distance.
-   */
-  calcDiagonalDistance(nodeTile: MapTile, goalTile: MapTile, cost: number, diagonalCost: number): number {
-    let dx = Math.abs(nodeTile.getMapCoord().getX() - goalTile.getMapCoord().getX());
-    let dy = Math.abs(nodeTile.getMapCoord().getY() - goalTile.getMapCoord().getY());
-    return cost * (dx + dy) + (diagonalCost - 2 * cost) * Math.min(dx, dy);
-  }
 
   getStartTile(): MapTile {
     return this.startTile;

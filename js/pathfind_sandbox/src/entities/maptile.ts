@@ -91,13 +91,13 @@ class MapTile {
     this.h = value;
   }
 
-  // getParentTile(): MapTile {
-  //   return this.parentTile;
-  // }
+  getParentTileId(): number {
+    return this.parentTileId;
+  }
 
-  // setParentTile(parentTile: MapTile) {
-  //   this.parentTile = parentTile;
-  // }
+  setPartenTileId(parentTileId: number) {
+    this.parentTileId = parentTileId;
+  }
 
   toString(): void {    
     console.log('id: ' + this.getId() + ' mX: ' + this.getMapCoord().getX() + '  mY: ' + this.getMapCoord().getY() + '  type: ' + TILE_TYPE[this.getType()]);

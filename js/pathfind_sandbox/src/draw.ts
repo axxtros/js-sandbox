@@ -173,6 +173,19 @@ class Draw {
     this.drawBorderSquare(x, y, Constains.MAP_TILE_SIZE, Constains.MAP_TILE_CURSOR_BACKGROUND_COLOR, Constains.MAP_TILE_CURSOR_BORDER_COLOR, 1);
   }
 
+  drawNeigborTiles(mapTiles: MapTile[]): void {
+    if(mapTiles.length > 0) {
+      for(let i = 0; i != mapTiles.length; i++) {
+        let drawingTile = mapTiles[i];
+        this.drawBorderSquare(drawingTile.getDrawCoord().getX(), drawingTile.getDrawCoord().getY(), Constains.MAP_TILE_SIZE, Constains.NEIGHBORE_TILE_BACKGROUND_COLOR, Constains.MAP_TILE_BORDER_COLOR, 1);
+      }
+    }
+  }
+
+  drawMinMapTile(tile: MapTile): void {
+    this.drawBorderSquare(tile.getDrawCoord().getX(), tile.getDrawCoord().getY(), Constains.MAP_TILE_SIZE, Constains.MIN_TILE_BACKGROUND_COLOR, Constains.MAP_TILE_BORDER_COLOR, 1);
+  }
+
   drawBorderSquare(x: number, y: number, size: number, fillColor: string, borderColor: string, borderTickness: number): void {
     this.drawBorderRectangle(x, y, size, size, fillColor, borderColor, borderTickness);
   }  
