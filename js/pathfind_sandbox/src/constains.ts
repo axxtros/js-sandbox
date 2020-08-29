@@ -6,7 +6,7 @@ class Constains {
   
   static MAP_HORIZONTAL_TILE_NUMBER = 60;       //default 60 (fullHD)
   static MAP_VERTICAL_TILE_NUMBER = 28;         //default 60 (fullHD)
-  static MAP_TILE_SIZE: number = 26;           //default 30 (fullHD)
+  static MAP_TILE_SIZE: number = 26;            //default 30 (fullHD)
 
   static MAP_TOP_COORD: number = 30;           //honnan indul az bal-felső tile kirajzolása
   static MAP_LEFT_COORD: number = 30;
