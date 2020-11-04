@@ -37,7 +37,7 @@ function calcLinesIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
 function calcCoordsLineWithAngle(x, y, angle, distance) {
 	point = Object.create(cord);
 	point.x = Math.round(x + Math.cos(Math.PI * angle / 180) * distance);
-  point.y = Math.round(y + Math.sin(Math.PI * angle / 180) * distance);
+  	point.y = Math.round(y + Math.sin(Math.PI * angle / 180) * distance);
   return point;
 }
 

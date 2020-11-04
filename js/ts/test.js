@@ -1,10 +1,15 @@
 //typescript demo
+//első lépésben a nodejs-t kell telepíteni, illetve a windows a path-ben hozzá kell adni az elérésekhez az npm managert: nodejs\npm.cmd
+//C:\Users\Axtros\AppData\Roaming\npm\tsserver -> C:\Users\Axtros\AppData\Roaming\npm\node_modules\typescript\bin\tsserver
+//C:\Users\Axtros\AppData\Roaming\npm\tsc -> C:\Users\Axtros\AppData\Roaming\npm\node_modules\typescript\bin\tsc
 //Typescript telepítése VSCode alá, getting started
 //https://code.visualstudio.com/docs/typescript/typescript-tutorial
 //https://www.digitalocean.com/community/tutorials/how-to-work-with-typescript-in-visual-studio-code
 //Powershell-es typescript fordítás engedélyezése:
 //https://stackoverflow.com/questions/58796490/tsc-ps1-cannot-be-loaded-because-running-scripts-is-disabled-on-this-system
-//run this in PowerShell command : Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+//run this in PowerShell command : 
+//      enabled:                        Set-ExecutionPolicy RemoteSigned
+//      back to its default value with: Set-ExecutionPolicy Restricted
 //Typescript documentation
 //https://www.typescriptlang.org/docs/handbook/basic-types.html
 //fordítás:
